@@ -1,0 +1,19 @@
+{
+	"name": "AzureBlobBAKtoSQLserver",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "DB_BACKUPS",
+				"container": "learning"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

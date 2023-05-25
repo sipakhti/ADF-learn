@@ -1,0 +1,9 @@
+{
+	"name": "Azure-Synapse-LEARN",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "022ecea2-3962-46ab-98dc-bdf08f0856bb",
+		"tenantId": "ab9d301f-2334-4496-9f65-13f5e9c84023"
+	}
+}

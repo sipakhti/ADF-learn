@@ -1,0 +1,61 @@
+{
+	"name": "AzureBLOBCSVtoSQLserver",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "DB_BACKUPS",
+				"container": "learning"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "id",
+				"type": "String"
+			},
+			{
+				"name": "msg",
+				"type": "String"
+			},
+			{
+				"name": "userID",
+				"type": "String"
+			},
+			{
+				"name": "username",
+				"type": "String"
+			},
+			{
+				"name": "channel",
+				"type": "String"
+			},
+			{
+				"name": "messageID",
+				"type": "String"
+			},
+			{
+				"name": "datestamp",
+				"type": "String"
+			},
+			{
+				"name": "attachments",
+				"type": "String"
+			},
+			{
+				"name": "serverID",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
