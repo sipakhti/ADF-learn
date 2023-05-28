@@ -126,7 +126,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "dsGetMetaFolder",
+									"referenceName": "dsCopyFileToFolder",
 									"type": "DatasetReference",
 									"parameters": {
 										"dsContainer": {
@@ -146,7 +146,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "dsGetMetaFolder",
+									"referenceName": "dsCopyFileToFolder",
 									"type": "DatasetReference",
 									"parameters": {
 										"dsContainer": {
