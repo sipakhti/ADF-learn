@@ -61,6 +61,112 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "FIleIterator",
+				"description": "Iterates through a file list and segregate then according to the extension",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetFolderMetaData",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('FolderItemsList')",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 2,
+					"activities": [
+						{
+							"name": "CopyFileToExtensionFolder",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": false,
+										"deleteFilesAfterCompletion": false
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings",
+										"metadata": [
+											{
+												"name": "pipeline",
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												}
+											}
+										]
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "dsGetMetaFolder",
+									"type": "DatasetReference",
+									"parameters": {
+										"dsContainer": {
+											"value": "@pipeline().parameters.plContainer",
+											"type": "Expression"
+										},
+										"dsFolder": {
+											"value": "@pipeline().parameters.plFolder",
+											"type": "Expression"
+										},
+										"dsFileName": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "dsGetMetaFolder",
+									"type": "DatasetReference",
+									"parameters": {
+										"dsContainer": {
+											"value": "@pipeline().parameters.plContainer",
+											"type": "Expression"
+										},
+										"dsFolder": {
+											"value": "@item().name.split('.').last()",
+											"type": "Expression"
+										},
+										"dsFileName": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
 			}
 		],
 		"parameters": {
