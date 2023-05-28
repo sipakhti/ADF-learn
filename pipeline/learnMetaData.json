@@ -1,0 +1,83 @@
+{
+	"name": "learnMetaData",
+	"properties": {
+		"description": "use get metadata activity and d",
+		"activities": [
+			{
+				"name": "GetFolderMetaData",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsGetMetaFolder",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsContainer": {
+								"value": "@pipeline().parameters.plContainer",
+								"type": "Expression"
+							},
+							"dsFolder": {
+								"value": "@pipeline().parameters.plFolder",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "setFolderItemsList",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "GetFolderMetaData",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "FolderItemsList",
+					"value": {
+						"value": "@activity('GetFolderMetaData').output.childItems",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"plContainer": {
+				"type": "string",
+				"defaultValue": "learning"
+			},
+			"plFolder": {
+				"type": "string",
+				"defaultValue": "DB_BACKUPS"
+			}
+		},
+		"variables": {
+			"FolderItemsList": {
+				"type": "Array"
+			}
+		},
+		"annotations": []
+	}
+}

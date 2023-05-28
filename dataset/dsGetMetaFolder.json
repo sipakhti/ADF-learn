@@ -1,0 +1,32 @@
+{
+	"name": "dsGetMetaFolder",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dsContainer": {
+				"type": "string"
+			},
+			"dsFolder": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@dataset().dsFolder",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().dsContainer",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}
