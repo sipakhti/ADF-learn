@@ -1,0 +1,12 @@
+{
+	"name": "AzureSqlGenericConnection",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsAzureSQL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
