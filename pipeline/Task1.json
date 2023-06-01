@@ -93,7 +93,11 @@
 											}
 										},
 										"last_accessed_row": {
-											"type": "Int32"
+											"type": "Int32",
+											"value": {
+												"value": "@int(variables('last_accessed_row'))",
+												"type": "Expression"
+											}
 										},
 										"table_name": {
 											"type": "String"
@@ -130,7 +134,7 @@
 				"type": "string",
 				"defaultValue": "discord-chat"
 			},
-			"pl_table": {
+			"pl_source_table": {
 				"type": "string",
 				"defaultValue": "chats"
 			},
