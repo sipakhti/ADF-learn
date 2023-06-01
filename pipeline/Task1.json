@@ -86,13 +86,25 @@
 									"sqlReaderStoredProcedureName": "[dbo].[get_rows]",
 									"storedProcedureParameters": {
 										"batch_size": {
-											"type": "Int32"
+											"type": "Int32",
+											"value": {
+												"value": "@int(pipeline().parameters.pl_batch_size)",
+												"type": "Expression"
+											}
 										},
 										"last_accessed_row": {
-											"type": "Int32"
+											"type": "Int32",
+											"value": {
+												"value": "@int(variables('last_accessed_row'))",
+												"type": "Expression"
+											}
 										},
 										"table_name": {
-											"type": "String"
+											"type": "String",
+											"value": {
+												"value": "@pipeline().parameters.pl_source_table",
+												"type": "Expression"
+											}
 										}
 									},
 									"queryTimeout": "02:00:00",
