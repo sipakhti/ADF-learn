@@ -63,7 +63,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@range(0, activity('get_table_total_rows').output.firstRow.rowCount / int(pipeline().parameters.pl_batch_size))",
+						"value": "@range(0, div(activity('get_table_total_rows').output.firstRow.rowCount , int(pipeline().parameters.pl_batch_size)))",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -175,7 +175,7 @@
 							"typeProperties": {
 								"variableName": "last_accessed_row",
 								"value": {
-									"value": "@item().value + int(pipeline().parameters.pl_batch_size)",
+									"value": "@add(item().value ,int(pipeline().parameters.pl_batch_size))\n\n",
 									"type": "Expression"
 								}
 							}
