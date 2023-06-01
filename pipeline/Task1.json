@@ -84,6 +84,24 @@
 								"dataflow": {
 									"referenceName": "dataflow1",
 									"type": "DataFlowReference",
+									"parameters": {
+										"df_source_schema": {
+											"value": "'@{pipeline().parameters.pl_source_schema}'",
+											"type": "Expression"
+										},
+										"df_source_table": {
+											"value": "'@{pipeline().parameters.pl_source_table}'",
+											"type": "Expression"
+										},
+										"df_sink_schema": {
+											"value": "'@{pipeline().parameters.pl_sink_schema}'",
+											"type": "Expression"
+										},
+										"df_sink_table": {
+											"value": "'@{pipeline().parameters.pl_sink_table}'",
+											"type": "Expression"
+										}
+									},
 									"datasetParameters": {
 										"source1": {
 											"ds_table": {
