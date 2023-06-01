@@ -16,7 +16,10 @@
 			"transformations": [],
 			"scriptLines": [
 				"parameters{",
-				"     df_schem as string (df_schema)",
+				"     df_source_schema as string,",
+				"     df_source_table as string,",
+				"     df_sink_schema as string,",
+				"     df_sink_table as string",
 				"}",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
