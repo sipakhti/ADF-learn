@@ -15,6 +15,9 @@
 			"sinks": [],
 			"transformations": [],
 			"scriptLines": [
+				"parameters{",
+				"     df_schem as string (df_schema)",
+				"}",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
