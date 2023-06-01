@@ -19,12 +19,28 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[sp_get_row_count]",
+						"storedProcedureParameters": {
+							"table_name": {
+								"type": "String"
+							}
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "AzureSqlGenericConnection",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_table": {
+								"value": "@pipeline().parameters.pl_table",
+								"type": "Expression"
+							},
+							"ds_schema": {
+								"value": "@pipeline().parameters.pl_schema",
+								"type": "Expression"
+							}
+						}
 					}
 				}
 			},
