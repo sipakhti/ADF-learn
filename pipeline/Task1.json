@@ -83,7 +83,7 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderStoredProcedureName": "[dbo].[get_rows]",
+									"sqlReaderStoredProcedureName": "[dbo].[get_modified_rows]",
 									"storedProcedureParameters": {
 										"batch_size": {
 											"type": "Int32",
@@ -113,7 +113,9 @@
 								"sink": {
 									"type": "AzureSqlSink",
 									"writeBehavior": "insert",
-									"sqlWriterUseTableLock": false
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
 								},
 								"enableStaging": false,
 								"translator": {
