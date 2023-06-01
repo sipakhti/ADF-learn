@@ -81,8 +81,29 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
 								"enableStaging": false
-							}
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSqlGenericConnection",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_table": {
+											"value": "@pipeline().parameters.pl_table",
+											"type": "Expression"
+										},
+										"ds_schema": {
+											"value": "@pipeline().parameters.pl_schema",
+											"type": "Expression"
+										}
+									}
+								}
+							]
 						}
 					]
 				}
