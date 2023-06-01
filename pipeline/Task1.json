@@ -83,15 +83,9 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[dbo].[get_rows]",
 									"queryTimeout": "02:00:00",
-									"partitionOption": {
-										"value": "@pipeline().parameters.pl_batch_size",
-										"type": "Expression"
-									},
-									"partitionSettings": {
-										"partitionUpperBound": "",
-										"partitionLowerBound": ""
-									}
+									"partitionOption": "None"
 								},
 								"enableStaging": false
 							},
