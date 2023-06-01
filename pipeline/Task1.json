@@ -35,7 +35,8 @@
 				"defaultValue": "discord-chat"
 			},
 			"pl_table": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "chats"
 			}
 		},
 		"annotations": []
