@@ -49,54 +49,12 @@
 				}
 			},
 			{
-				"name": "batch_iterator",
-				"description": "iterates through a table in batches",
+				"name": "ForEach1",
 				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "get_table_total_rows",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"items": {
-						"value": "@range(0, div(activity('get_table_total_rows').output.firstRow.row_count , int(pipeline().parameters.pl_batch_size)))",
-						"type": "Expression"
-					},
-					"isSequential": true,
 					"activities": [
-						{
-							"name": "Set variable1",
-							"type": "SetVariable",
-							"dependsOn": [
-								{
-									"activity": "Wait1",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "last_accessed_row",
-								"value": {
-									"value": "@string(mul(int(pipeline().parameters.pl_batch_size),item() ))",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "Wait1",
-							"type": "Wait",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"waitTimeInSeconds": 1
-							}
-						},
 						{
 							"name": "Copy data1",
 							"type": "Copy",
@@ -117,14 +75,14 @@
 										"batch_size": {
 											"type": "Int32",
 											"value": {
-												"value": "@int(pipeline().parameters.pl_batch_size)",
+												"value": "@pipeline().parameters.pl_batch_size",
 												"type": "Expression"
 											}
 										},
 										"last_accessed_row": {
 											"type": "Int32",
 											"value": {
-												"value": "@int(variables('last_accessed_row'))",
+												"value": "@variables('last_accessed_row')",
 												"type": "Expression"
 											}
 										},
@@ -188,6 +146,35 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						},
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Wait1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "last_accessed_row",
+								"value": {
+									"value": "@string(mul(int(pipeline().parameters.pl_batch_size), item()))",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
