@@ -63,7 +63,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@int(activity('get_table_total_rows').output.firstRow.rowCount)",
+						"value": "@range(0, activity('get_table_total_rows').output.firstRow.rowCount/)",
 						"type": "Expression"
 					}
 				}
