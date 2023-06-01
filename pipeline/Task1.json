@@ -112,6 +112,16 @@
 												"value": "@pipeline().parameters.pl_source_schema",
 												"type": "Expression"
 											}
+										},
+										"sink1": {
+											"ds_table": {
+												"value": "@pipeline().parameters.pl_sink_table",
+												"type": "Expression"
+											},
+											"ds_schema": {
+												"value": "@pipeline().parameters.pl_sink_schema",
+												"type": "Expression"
+											}
 										}
 									}
 								},
