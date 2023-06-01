@@ -41,7 +41,7 @@
 								"type": "Expression"
 							},
 							"ds_schema": {
-								"value": "@pipeline().parameters.pl_schema",
+								"value": "@pipeline().parameters.pl_source_schema",
 								"type": "Expression"
 							}
 						}
@@ -135,7 +135,7 @@
 											"type": "Expression"
 										},
 										"ds_schema": {
-											"value": "@pipeline().parameters.pl_schema",
+											"value": "@pipeline().parameters.pl_source_schema",
 											"type": "Expression"
 										}
 									}
@@ -151,7 +151,7 @@
 											"type": "Expression"
 										},
 										"ds_schema": {
-											"value": "@pipeline().parameters.pl_schema",
+											"value": "@pipeline().parameters.pl_sink_schema",
 											"type": "Expression"
 										}
 									}
