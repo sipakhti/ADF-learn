@@ -84,7 +84,14 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
+									"partitionOption": {
+										"value": "@pipeline().parameters.pl_batch_size",
+										"type": "Expression"
+									},
+									"partitionSettings": {
+										"partitionUpperBound": "",
+										"partitionLowerBound": ""
+									}
 								},
 								"enableStaging": false
 							},
