@@ -174,7 +174,10 @@
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "last_accessed_row",
-								"value": ""
+								"value": {
+									"value": "@item().value + int(pipeline().parameters.pl_batch_size)",
+									"type": "Expression"
+								}
 							}
 						},
 						{
