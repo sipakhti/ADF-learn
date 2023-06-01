@@ -163,8 +163,28 @@
 						{
 							"name": "Set variable1",
 							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Wait1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "last_accessed_row",
+								"value": ""
+							}
+						},
+						{
+							"name": "Wait1",
+							"type": "Wait",
 							"dependsOn": [],
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
 						}
 					]
 				}
