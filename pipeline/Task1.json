@@ -37,7 +37,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"ds_table": {
-								"value": "@pipeline().parameters.pl_table",
+								"value": "@pipeline().parameters.pl_source_table",
 								"type": "Expression"
 							},
 							"ds_schema": {
