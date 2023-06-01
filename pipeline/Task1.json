@@ -63,7 +63,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@range(0, activity('get_table_total_rows').output.firstRow.rowCount/)",
+						"value": "@range(0, activity('get_table_total_rows').output.firstRow.rowCount / int(pipeline().parameters.pl_batch_size))",
 						"type": "Expression"
 					}
 				}
@@ -83,7 +83,8 @@
 				"defaultValue": "dbo"
 			},
 			"pl_batch_size": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "4000"
 			}
 		},
 		"variables": {
