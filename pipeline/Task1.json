@@ -29,6 +29,15 @@
 				}
 			}
 		],
+		"parameters": {
+			"pl_database": {
+				"type": "string",
+				"defaultValue": "discord-chat"
+			},
+			"pl_table": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
