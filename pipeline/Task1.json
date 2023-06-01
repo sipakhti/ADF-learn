@@ -27,6 +27,20 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "batch_iterator",
+				"description": "iterates through a ",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get_table_total_rows",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": []
 			}
 		],
 		"parameters": {
