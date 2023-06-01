@@ -84,6 +84,21 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderStoredProcedureName": "[dbo].[get_rows]",
+									"storedProcedureParameters": {
+										"batch_size": {
+											"type": "Int32",
+											"value": {
+												"value": "@int(pipeline().parameters.pl_batch_size)",
+												"type": "Expression"
+											}
+										},
+										"last_accessed_row": {
+											"type": "Int32"
+										},
+										"table_name": {
+											"type": "String"
+										}
+									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
