@@ -100,13 +100,30 @@
 											}
 										},
 										"table_name": {
-											"type": "String"
+											"type": "String",
+											"value": {
+												"value": "@pipeline().parameters.pl_source_table",
+												"type": "Expression"
+											}
 										}
 									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
-								"enableStaging": false
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
 							},
 							"inputs": [
 								{
@@ -115,6 +132,22 @@
 									"parameters": {
 										"ds_table": {
 											"value": "@pipeline().parameters.pl_source_table",
+											"type": "Expression"
+										},
+										"ds_schema": {
+											"value": "@pipeline().parameters.pl_schema",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureSqlGenericConnection",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_table": {
+											"value": "@pipeline().parameters.pl_sink_table",
 											"type": "Expression"
 										},
 										"ds_schema": {
