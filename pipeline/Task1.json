@@ -96,6 +96,10 @@
 										"df_sink_schema": {
 											"value": "'@{pipeline().parameters.pl_sink_schema}'",
 											"type": "Expression"
+										},
+										"df_sink_table": {
+											"value": "'@{pipeline().parameters.pl_sink_table}'",
+											"type": "Expression"
 										}
 									},
 									"datasetParameters": {
