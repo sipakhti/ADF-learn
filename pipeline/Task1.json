@@ -83,7 +83,33 @@
 							"typeProperties": {
 								"dataflow": {
 									"referenceName": "dataflow1",
-									"type": "DataFlowReference"
+									"type": "DataFlowReference",
+									"parameters": {
+										"df_source_schema": {
+											"value": "'@{pipeline().parameters.pl_source_schema}'",
+											"type": "Expression"
+										},
+										"df_source_table": {
+											"value": "'@{pipeline().parameters.pl_source_table}'",
+											"type": "Expression"
+										},
+										"df_sink_schema": {
+											"value": "'@{pipeline().parameters.pl_sink_schema}'",
+											"type": "Expression"
+										}
+									},
+									"datasetParameters": {
+										"source1": {
+											"ds_table": {
+												"value": "@pipeline().parameters.pl_source_table",
+												"type": "Expression"
+											},
+											"ds_schema": {
+												"value": "@pipeline().parameters.pl_source_schema",
+												"type": "Expression"
+											}
+										}
+									}
 								},
 								"compute": {
 									"coreCount": 8,
