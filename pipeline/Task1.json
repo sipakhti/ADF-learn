@@ -120,6 +120,118 @@
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "id",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 0,
+												"precision": 18
+											},
+											"sink": {
+												"name": "id",
+												"type": "Decimal",
+												"physicalType": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "msg",
+												"type": "String",
+												"physicalType": "text"
+											},
+											"sink": {
+												"name": "msg",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "userID",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "userID",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "username",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "username",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "channel",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "channel",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "messageID",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "messageID",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "datestamp",
+												"type": "DateTime",
+												"physicalType": "datetime"
+											},
+											"sink": {
+												"name": "datestamp",
+												"type": "DateTime",
+												"physicalType": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"name": "attachments",
+												"type": "String",
+												"physicalType": "text"
+											},
+											"sink": {
+												"name": "attachments",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "serverID",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "serverID",
+												"type": "String",
+												"physicalType": "String"
+											}
+										}
+									],
 									"typeConversion": true,
 									"typeConversionSettings": {
 										"allowDataTruncation": true,
