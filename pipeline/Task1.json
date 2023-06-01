@@ -57,6 +57,10 @@
 			"pl_table": {
 				"type": "string",
 				"defaultValue": "chats"
+			},
+			"pl_schema": {
+				"type": "string",
+				"defaultValue": "dbo"
 			}
 		},
 		"annotations": []
