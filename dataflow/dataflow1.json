@@ -37,7 +37,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     procedureName: '',",
-				"     schemaName: '[dbo]',",
+				"     schemaName: ($df_source_schema),",
 				"     resultSet: true,",
 				"     format: 'procedure') ~> source1",
 				"source1 derive(username = \"meh\") ~> derivedColumn1",
