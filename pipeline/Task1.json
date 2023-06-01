@@ -83,7 +83,7 @@
 							"typeProperties": {
 								"variableName": "last_accessed_row",
 								"value": {
-									"value": "@string(add(int(pipeline().parameters.pl_batch_size),item()))",
+									"value": "@string(mul(int(pipeline().parameters.pl_batch_size),item() ))",
 									"type": "Expression"
 								}
 							}
