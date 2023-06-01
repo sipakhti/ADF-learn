@@ -4,7 +4,8 @@
 		"description": "\n1) Fetching limited rows\n\n2) Copy the rows in an another , By changing the one filed \n\n3) Table , Log how many rows you processed , pipeline name , pipeline run id , run date \n\nsource table , target table\n",
 		"activities": [
 			{
-				"name": "Lookup1",
+				"name": "get_table_total_rows",
+				"description": "returns the total number of the table",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
