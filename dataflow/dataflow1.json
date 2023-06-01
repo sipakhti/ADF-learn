@@ -18,7 +18,9 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1"
+				"     procedureName: '',",
+				"     resultSet: true,",
+				"     format: 'procedure') ~> source1"
 			]
 		}
 	}
