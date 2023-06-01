@@ -69,8 +69,8 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "dataflow1",
-							"type": "ExecuteDataFlow",
+							"name": "Copy data1",
+							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
 								"timeout": "0.12:00:00",
@@ -81,56 +81,41 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"dataflow": {
-									"referenceName": "dataflow1",
-									"type": "DataFlowReference",
-									"parameters": {
-										"df_source_schema": {
-											"value": "'@{pipeline().parameters.pl_source_schema}'",
-											"type": "Expression"
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[dbo].[get_rows]",
+									"storedProcedureParameters": {
+										"batch_size": {
+											"type": "Int32"
 										},
-										"df_source_table": {
-											"value": "'@{pipeline().parameters.pl_source_table}'",
-											"type": "Expression"
+										"last_accessed_row": {
+											"type": "Int32"
 										},
-										"df_sink_schema": {
-											"value": "'@{pipeline().parameters.pl_sink_schema}'",
-											"type": "Expression"
-										},
-										"df_sink_table": {
-											"value": "'@{pipeline().parameters.pl_sink_table}'",
-											"type": "Expression"
+										"table_name": {
+											"type": "String"
 										}
 									},
-									"datasetParameters": {
-										"source1": {
-											"ds_table": {
-												"value": "@pipeline().parameters.pl_source_table",
-												"type": "Expression"
-											},
-											"ds_schema": {
-												"value": "@pipeline().parameters.pl_source_schema",
-												"type": "Expression"
-											}
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSqlGenericConnection",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_table": {
+											"value": "@pipeline().parameters.pl_source_table",
+											"type": "Expression"
 										},
-										"sink1": {
-											"ds_table": {
-												"value": "@pipeline().parameters.pl_sink_table",
-												"type": "Expression"
-											},
-											"ds_schema": {
-												"value": "@pipeline().parameters.pl_sink_schema",
-												"type": "Expression"
-											}
+										"ds_schema": {
+											"value": "@pipeline().parameters.pl_source_schema",
+											"type": "Expression"
 										}
 									}
-								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
-								},
-								"traceLevel": "Fine"
-							}
+								}
+							]
 						}
 					]
 				}
