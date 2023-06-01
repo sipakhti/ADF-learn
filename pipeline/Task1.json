@@ -69,8 +69,8 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Copy data1",
-							"type": "Copy",
+							"name": "Data flow1",
+							"type": "ExecuteDataFlow",
 							"dependsOn": [],
 							"policy": {
 								"timeout": "0.12:00:00",
@@ -81,82 +81,16 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderStoredProcedureName": "[dbo].[get_rows]",
-									"storedProcedureParameters": {
-										"batch_size": {
-											"type": "Int32",
-											"value": {
-												"value": "@int(pipeline().parameters.pl_batch_size)",
-												"type": "Expression"
-											}
-										},
-										"last_accessed_row": {
-											"type": "Int32",
-											"value": {
-												"value": "@int(variables('last_accessed_row'))",
-												"type": "Expression"
-											}
-										},
-										"table_name": {
-											"type": "String",
-											"value": {
-												"value": "@pipeline().parameters.pl_source_table",
-												"type": "Expression"
-											}
-										}
-									},
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
+								"dataflow": {
+									"referenceName": "dataflow1",
+									"type": "DataFlowReference"
 								},
-								"sink": {
-									"type": "AzureSqlSink",
-									"tableOption": "autoCreate",
-									"disableMetricsCollection": false
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
 								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "AzureSqlGenericConnection",
-									"type": "DatasetReference",
-									"parameters": {
-										"ds_table": {
-											"value": "@pipeline().parameters.pl_source_table",
-											"type": "Expression"
-										},
-										"ds_schema": {
-											"value": "@pipeline().parameters.pl_source_schema",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "AzureSqlGenericConnection",
-									"type": "DatasetReference",
-									"parameters": {
-										"ds_table": {
-											"value": "@pipeline().parameters.pl_sink_table",
-											"type": "Expression"
-										},
-										"ds_schema": {
-											"value": "@pipeline().parameters.pl_sink_schema",
-											"type": "Expression"
-										}
-									}
-								}
-							]
+								"traceLevel": "Fine"
+							}
 						}
 					]
 				}
