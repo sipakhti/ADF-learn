@@ -89,6 +89,10 @@
 											"ds_table": {
 												"value": "@pipeline().parameters.pl_source_table",
 												"type": "Expression"
+											},
+											"ds_schema": {
+												"value": "@pipeline().parameters.pl_source_schema",
+												"type": "Expression"
 											}
 										}
 									}
