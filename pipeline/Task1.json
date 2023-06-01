@@ -30,7 +30,7 @@
 			},
 			{
 				"name": "batch_iterator",
-				"description": "iterates through a ",
+				"description": "iterates through a table in batches",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -40,7 +40,13 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('get_table_total_rows').output.firstRow",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
