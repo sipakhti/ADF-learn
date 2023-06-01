@@ -81,6 +81,15 @@
 			"pl_schema": {
 				"type": "string",
 				"defaultValue": "dbo"
+			},
+			"pl_batch_size": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"last_accessed_row": {
+				"type": "String",
+				"defaultValue": "0"
 			}
 		},
 		"annotations": []
