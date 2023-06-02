@@ -22,7 +22,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "AzureSqlTable1",
+						"referenceName": "AzureSqlGenericParamedSqlAuth",
 						"type": "DatasetReference",
 						"parameters": {
 							"ds_domain_name": {
@@ -41,7 +41,8 @@
 								"value": "@pipeline().parameters.pl_source_password",
 								"type": "Expression"
 							},
-							"ds_schema": null
+							"ds_schema": null,
+							"ds_table": "none"
 						}
 					},
 					"firstRowOnly": false
@@ -72,13 +73,57 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "Copy Table to Table",
+									"referenceName": "Copy Table to Table Generic",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,
 								"parameters": {
-									"pl_database": {
+									"pl_source_database": {
 										"value": "@pipeline().parameters.pl_source_database",
+										"type": "Expression"
+									},
+									"pl_source_table": {
+										"value": "@item().tableName",
+										"type": "Expression"
+									},
+									"pl_source_schema": {
+										"value": "@item().schemaName",
+										"type": "Expression"
+									},
+									"pl_sink_table": {
+										"value": "@item().tableName",
+										"type": "Expression"
+									},
+									"pl_sink_schema": {
+										"value": "[@{pipeline().parameters.pl_source_database}].[@{item().schemaName}]",
+										"type": "Expression"
+									},
+									"pl_sink_database": {
+										"value": "@pipeline().parameters.pl_sink_database",
+										"type": "Expression"
+									},
+									"pl_sink_domain_name": {
+										"value": "@pipeline().parameters.pl_sink_domain_name",
+										"type": "Expression"
+									},
+									"pl_source_domain_name": {
+										"value": "@pipeline().parameters.pl_source_domain_name",
+										"type": "Expression"
+									},
+									"pl_source_username": {
+										"value": "@pipeline().parameters.pl_source_username",
+										"type": "Expression"
+									},
+									"pl_source_password": {
+										"value": "@pipeline().parameters.pl_source_password",
+										"type": "Expression"
+									},
+									"pl_sink_username": {
+										"value": "@pipeline().parameters.pl_sink_username",
+										"type": "Expression"
+									},
+									"pl_sink_password": {
+										"value": "@pipeline().parameters.pl_sink_password",
 										"type": "Expression"
 									}
 								}
@@ -90,16 +135,36 @@
 		],
 		"parameters": {
 			"pl_source_domain_name": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "datametic-adf-learning.database.windows.net"
 			},
 			"pl_source_database": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "discord-chat"
 			},
 			"pl_source_username": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "sipakhti"
 			},
 			"pl_source_password": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Bingo_12345"
+			},
+			"pl_sink_domain_name": {
+				"type": "string",
+				"defaultValue": "datametic-adf-learning.database.windows.net"
+			},
+			"pl_sink_database": {
+				"type": "string",
+				"defaultValue": "backup"
+			},
+			"pl_sink_username": {
+				"type": "string",
+				"defaultValue": "sipakhti"
+			},
+			"pl_sink_password": {
+				"type": "string",
+				"defaultValue": "Bingo_12345"
 			}
 		},
 		"annotations": []

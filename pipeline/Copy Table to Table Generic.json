@@ -59,7 +59,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "batch iterator over the rows",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -78,7 +78,7 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Copy data1",
+							"name": "copy batch",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -97,6 +97,7 @@
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
+									"isolationLevel": "Snapshot",
 									"partitionOption": "None"
 								},
 								"sink": {
@@ -202,7 +203,7 @@
 				"type": "Script",
 				"dependsOn": [
 					{
-						"activity": "ForEach1",
+						"activity": "batch iterator over the rows",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -256,7 +257,7 @@
 				"type": "Script",
 				"dependsOn": [
 					{
-						"activity": "ForEach1",
+						"activity": "batch iterator over the rows",
 						"dependencyConditions": [
 							"Succeeded"
 						]
