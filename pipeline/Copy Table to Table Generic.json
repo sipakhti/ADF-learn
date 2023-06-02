@@ -59,98 +59,6 @@
 				}
 			},
 			{
-				"name": "log_completion",
-				"type": "Script",
-				"dependsOn": [
-					{
-						"activity": "ForEach1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"linkedServiceName": {
-					"referenceName": "lsAzureSQL",
-					"type": "LinkedServiceReference"
-				},
-				"typeProperties": {
-					"scripts": [
-						{
-							"parameters": [
-								{
-									"name": "log_table_name",
-									"type": "String",
-									"value": {
-										"value": "@pipeline().parameters.pl_log_table",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								},
-								{
-									"name": "pipeline_name",
-									"type": "String",
-									"value": {
-										"value": "@pipeline().Pipeline",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								},
-								{
-									"name": "pipeline_id",
-									"type": "String",
-									"value": {
-										"value": "@pipeline().RunId",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								},
-								{
-									"name": "run_date",
-									"type": "Datetime",
-									"value": {
-										"value": "@utcnow()",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								},
-								{
-									"name": "source_table",
-									"type": "String",
-									"value": {
-										"value": "@pipeline().parameters.pl_source_table",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								},
-								{
-									"name": "sink_table",
-									"type": "String",
-									"value": {
-										"value": "@pipeline().parameters.pl_sink_table",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								}
-							],
-							"type": "NonQuery",
-							"text": {
-								"value": "IF EXISTS (SELECT 1 \nFROM INFORMATION_SCHEMA.TABLES \nWHERE TABLE_TYPE='BASE TABLE' \nAND TABLE_NAME='@{pipeline().parameters.pl_log_table}')\nBEGIN\nINSERT INTO [@{pipeline().parameters.pl_log_table}] VALUES ('@{pipeline().Pipeline}','@{pipeline().RunId}','@{utcNow('yyyy-MM-dd HH:mm:ss')}','@{pipeline().parameters.pl_source_table}','@{pipeline().parameters.pl_sink_table}')\nEND\nELSE\nBEGIN\ncreate table [@{pipeline().parameters.pl_log_table}] (\npipeline_name varchar(max),\npipeline_id varchar(max),\nrun_date datetime,\nsource_table varchar(max),\nsink_table varchar(max)\n)\nINSERT INTO [@{pipeline().parameters.pl_log_table}] VALUES ('@{pipeline().Pipeline}','@{pipeline().RunId}','@{utcNow('yyyy-MM-dd HH:mm:ss')}','@{pipeline().parameters.pl_source_table}','@{pipeline().parameters.pl_sink_table}')\nEND\n",
-								"type": "Expression"
-							}
-						}
-					],
-					"scriptBlockExecutionTimeout": "02:00:00"
-				}
-			},
-			{
 				"name": "ForEach1",
 				"type": "ForEach",
 				"dependsOn": [
@@ -287,6 +195,114 @@
 							}
 						}
 					]
+				}
+			},
+			{
+				"name": "sink_completion_log",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "lsAzureSqlParamed",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"ls_domain_name": {
+							"value": "@pipeline().parameters.pl_sink_domain_name",
+							"type": "Expression"
+						},
+						"ls_database": {
+							"value": "@pipeline().parameters.pl_sink_database",
+							"type": "Expression"
+						},
+						"ls_username": {
+							"value": "@pipeline().parameters.pl_sink_username",
+							"type": "Expression"
+						},
+						"ls_password": {
+							"value": "@pipeline().parameters.pl_sink_password",
+							"type": "Expression"
+						}
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": {
+								"value": "IF EXISTS (SELECT 1 \nFROM INFORMATION_SCHEMA.TABLES \nWHERE TABLE_TYPE='BASE TABLE' \nAND TABLE_NAME='@{pipeline().parameters.pl_log_table}')\nBEGIN\nINSERT INTO [@{pipeline().parameters.pl_log_table}] VALUES ('@{pipeline().Pipeline}','@{pipeline().RunId}','@{utcNow('yyyy-MM-dd HH:mm:ss')}','@{pipeline().parameters.pl_source_table}','@{pipeline().parameters.pl_sink_table}')\nEND\nELSE\nBEGIN\ncreate table [@{pipeline().parameters.pl_log_table}] (\npipeline_name varchar(max),\npipeline_id varchar(max),\nrun_date datetime,\nsource_table varchar(max),\nsink_table varchar(max)\n)\nINSERT INTO [@{pipeline().parameters.pl_log_table}] VALUES ('@{pipeline().Pipeline}','@{pipeline().RunId}','@{utcNow('yyyy-MM-dd HH:mm:ss')}','@{pipeline().parameters.pl_source_table}','@{pipeline().parameters.pl_sink_table}')\nEND\n",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "source_completion_log",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "lsAzureSqlParamed",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"ls_domain_name": {
+							"value": "@pipeline().parameters.pl_source_domain_name",
+							"type": "Expression"
+						},
+						"ls_database": {
+							"value": "@pipeline().parameters.pl_source_database",
+							"type": "Expression"
+						},
+						"ls_username": {
+							"value": "@pipeline().parameters.pl_source_username",
+							"type": "Expression"
+						},
+						"ls_password": {
+							"value": "@pipeline().parameters.pl_source_password",
+							"type": "Expression"
+						}
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": {
+								"value": "IF EXISTS (SELECT 1 \nFROM INFORMATION_SCHEMA.TABLES \nWHERE TABLE_TYPE='BASE TABLE' \nAND TABLE_NAME='@{pipeline().parameters.pl_log_table}')\nBEGIN\nINSERT INTO [@{pipeline().parameters.pl_log_table}] VALUES ('@{pipeline().Pipeline}','@{pipeline().RunId}','@{utcNow('yyyy-MM-dd HH:mm:ss')}','@{pipeline().parameters.pl_source_table}','@{pipeline().parameters.pl_sink_table}')\nEND\nELSE\nBEGIN\ncreate table [@{pipeline().parameters.pl_log_table}] (\npipeline_name varchar(max),\npipeline_id varchar(max),\nrun_date datetime,\nsource_table varchar(max),\nsink_table varchar(max)\n)\nINSERT INTO [@{pipeline().parameters.pl_log_table}] VALUES ('@{pipeline().Pipeline}','@{pipeline().RunId}','@{utcNow('yyyy-MM-dd HH:mm:ss')}','@{pipeline().parameters.pl_source_table}','@{pipeline().parameters.pl_sink_table}')\nEND\n",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			}
 		],
