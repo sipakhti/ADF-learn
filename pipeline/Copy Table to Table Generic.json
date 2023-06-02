@@ -59,7 +59,7 @@
 				}
 			},
 			{
-				"name": "batch iterator over the rows_copy1",
+				"name": "batch iterator over the rows",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -89,7 +89,7 @@
 								},
 								"ifTrueActivities": [
 									{
-										"name": "copy batch_copy1",
+										"name": "copy batch",
 										"type": "Copy",
 										"dependsOn": [],
 										"policy": {
@@ -193,7 +193,7 @@
 										]
 									},
 									{
-										"name": "Set variable1_copy1",
+										"name": "set last accessed row",
 										"type": "SetVariable",
 										"dependsOn": [],
 										"userProperties": [],
@@ -212,11 +212,11 @@
 				}
 			},
 			{
-				"name": "sink_completion_log_copy1",
+				"name": "sink_completion_log",
 				"type": "Script",
 				"dependsOn": [
 					{
-						"activity": "batch iterator over the rows_copy1",
+						"activity": "batch iterator over the rows",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -266,11 +266,11 @@
 				}
 			},
 			{
-				"name": "source_completion_log_copy1",
+				"name": "source_completion_log",
 				"type": "Script",
 				"dependsOn": [
 					{
-						"activity": "batch iterator over the rows_copy1",
+						"activity": "batch iterator over the rows",
 						"dependencyConditions": [
 							"Succeeded"
 						]
