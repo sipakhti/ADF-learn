@@ -1,5 +1,5 @@
 {
-	"name": "AzureSqlTable1",
+	"name": "AzureSqlGenericParamedSqlAuth",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "lsAzureSqlParamed",
