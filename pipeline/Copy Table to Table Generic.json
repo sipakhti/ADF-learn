@@ -1,0 +1,359 @@
+{
+	"name": "Copy Table to Table Generic",
+	"properties": {
+		"description": "\n1) Fetching limited rows\n\n2) Copy the rows in an another , By changing the one filed \n\n3) Table , Log how many rows you processed , pipeline name , pipeline run id , run date \n\nsource table , target table\n",
+		"activities": [
+			{
+				"name": "get_table_total_rows",
+				"description": "returns the total number of the table",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT COUNT(*) as row_count FROM @{pipeline().parameters.pl_source_table}",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlGenericParamedSqlAuth",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_domain_name": {
+								"value": "@pipeline().parameters.pl_source_domain_name",
+								"type": "Expression"
+							},
+							"ds_database": {
+								"value": "@pipeline().parameters.pl_source_database",
+								"type": "Expression"
+							},
+							"ds_username": {
+								"value": "@pipeline().parameters.pl_source_username",
+								"type": "Expression"
+							},
+							"ds_password": {
+								"value": "@pipeline().parameters.pl_source_password",
+								"type": "Expression"
+							},
+							"ds_schema": {
+								"value": "@pipeline().parameters.pl_source_schema",
+								"type": "Expression"
+							},
+							"ds_table": {
+								"value": "@pipeline().parameters.pl_source_table",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "log_completion",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "lsAzureSQL",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"parameters": [
+								{
+									"name": "log_table_name",
+									"type": "String",
+									"value": {
+										"value": "@pipeline().parameters.pl_log_table",
+										"type": "Expression"
+									},
+									"direction": "Input"
+								},
+								{
+									"name": "pipeline_name",
+									"type": "String",
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"direction": "Input"
+								},
+								{
+									"name": "pipeline_id",
+									"type": "String",
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"direction": "Input"
+								},
+								{
+									"name": "run_date",
+									"type": "Datetime",
+									"value": {
+										"value": "@utcnow()",
+										"type": "Expression"
+									},
+									"direction": "Input"
+								},
+								{
+									"name": "source_table",
+									"type": "String",
+									"value": {
+										"value": "@pipeline().parameters.pl_source_table",
+										"type": "Expression"
+									},
+									"direction": "Input"
+								},
+								{
+									"name": "sink_table",
+									"type": "String",
+									"value": {
+										"value": "@pipeline().parameters.pl_sink_table",
+										"type": "Expression"
+									},
+									"direction": "Input"
+								}
+							],
+							"type": "NonQuery",
+							"text": {
+								"value": "IF EXISTS (SELECT 1 \nFROM INFORMATION_SCHEMA.TABLES \nWHERE TABLE_TYPE='BASE TABLE' \nAND TABLE_NAME='@{pipeline().parameters.pl_log_table}')\nBEGIN\nINSERT INTO [@{pipeline().parameters.pl_log_table}] VALUES ('@{pipeline().Pipeline}','@{pipeline().RunId}','@{utcNow('yyyy-MM-dd HH:mm:ss')}','@{pipeline().parameters.pl_source_table}','@{pipeline().parameters.pl_sink_table}')\nEND\nELSE\nBEGIN\ncreate table [@{pipeline().parameters.pl_log_table}] (\npipeline_name varchar(max),\npipeline_id varchar(max),\nrun_date datetime,\nsource_table varchar(max),\nsink_table varchar(max)\n)\nINSERT INTO [@{pipeline().parameters.pl_log_table}] VALUES ('@{pipeline().Pipeline}','@{pipeline().RunId}','@{utcNow('yyyy-MM-dd HH:mm:ss')}','@{pipeline().parameters.pl_source_table}','@{pipeline().parameters.pl_sink_table}')\nEND\n",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get_table_total_rows",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@range(0,add(div(activity('get_table_total_rows').output.firstRow.row_count, int(pipeline().parameters.pl_batch_size)),1))",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": {
+										"value": "@concat('[',pipeline().parameters.pl_source_schema,'].[get_modified_rows_',pipeline().parameters.pl_source_table,']')",
+										"type": "Expression"
+									},
+									"storedProcedureParameters": {
+										"batch_size": {
+											"type": "Int32",
+											"value": {
+												"value": "@pipeline().parameters.pl_batch_size",
+												"type": "Expression"
+											}
+										},
+										"last_accessed_row": {
+											"type": "Int32",
+											"value": {
+												"value": "@variables('last_accessed_row')",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSqlGenericParamedSqlAuth",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_domain_name": {
+											"value": "@pipeline().parameters.pl_source_domain_name",
+											"type": "Expression"
+										},
+										"ds_database": {
+											"value": "@pipeline().parameters.pl_source_database",
+											"type": "Expression"
+										},
+										"ds_username": {
+											"value": "@pipeline().parameters.pl_source_username",
+											"type": "Expression"
+										},
+										"ds_password": {
+											"value": "@pipeline().parameters.pl_source_password",
+											"type": "Expression"
+										},
+										"ds_schema": {
+											"value": "@pipeline().parameters.pl_source_schema",
+											"type": "Expression"
+										},
+										"ds_table": {
+											"value": "@pipeline().parameters.pl_source_table",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureSqlGenericConnection",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_table": {
+											"value": "@pipeline().parameters.pl_sink_table",
+											"type": "Expression"
+										},
+										"ds_schema": {
+											"value": "@pipeline().parameters.pl_sink_schema",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "last_accessed_row",
+								"value": {
+									"value": "@string(mul(int(pipeline().parameters.pl_batch_size), item()))",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"pl_source_database": {
+				"type": "string",
+				"defaultValue": "discord-chat"
+			},
+			"pl_source_table": {
+				"type": "string",
+				"defaultValue": "chats"
+			},
+			"pl_source_schema": {
+				"type": "string",
+				"defaultValue": "dbo"
+			},
+			"pl_batch_size": {
+				"type": "string",
+				"defaultValue": "4000"
+			},
+			"pl_sink_table": {
+				"type": "string",
+				"defaultValue": "chat_task_one"
+			},
+			"pl_sink_schema": {
+				"type": "string",
+				"defaultValue": "task_one"
+			},
+			"pl_log_table": {
+				"type": "string",
+				"defaultValue": "logs"
+			},
+			"pl_sink_database": {
+				"type": "string",
+				"defaultValue": "discord-chat"
+			},
+			"pl_sink_domain_name": {
+				"type": "string",
+				"defaultValue": "datametic-adf-learning.database.windows.net"
+			},
+			"pl_source_domain_name": {
+				"type": "string",
+				"defaultValue": "datametic-adf-learning.database.windows.net"
+			},
+			"pl_source_username": {
+				"type": "string",
+				"defaultValue": "sipakhti"
+			},
+			"pl_source_password": {
+				"type": "string",
+				"defaultValue": "Bingo_12345"
+			},
+			"pl_sink_username": {
+				"type": "string",
+				"defaultValue": "sipakhti"
+			},
+			"pl_sink_password": {
+				"type": "string",
+				"defaultValue": "Bingo_12345"
+			}
+		},
+		"variables": {
+			"last_accessed_row": {
+				"type": "String",
+				"defaultValue": "0"
+			}
+		},
+		"annotations": []
+	}
+}
