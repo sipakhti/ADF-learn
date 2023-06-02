@@ -1,0 +1,25 @@
+{
+	"name": "lsAzureSqlParamed",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"ls_domain_name": {
+				"type": "string"
+			},
+			"ls_database": {
+				"type": "string"
+			},
+			"ls_username": {
+				"type": "string"
+			},
+			"ls_password": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().ls_domain_name};Initial Catalog=@{linkedService().ls_database};User ID=@{linkedService().ls_username};Password=@{linkedService().ls_password}"
+		}
+	}
+}
