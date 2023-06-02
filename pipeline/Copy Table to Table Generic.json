@@ -185,7 +185,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "SELECT * FROM [@{pipeline().parameters.pl_source_schema}].[pipeline().parameters.pl_source_table]\nORDER BY (SELECT NULL)\nOFFSET @{variables('last_accessed_row')} ROWS\nFETCH NEXT @{pipeline().parameters.pl_batch_size} ROWS ONLY",
+										"value": "SELECT * FROM [@{pipeline().parameters.pl_source_schema}].[@{pipeline().parameters.pl_source_table}]\nORDER BY (SELECT NULL)\nOFFSET @{variables('last_accessed_row')} ROWS\nFETCH NEXT @{pipeline().parameters.pl_batch_size} ROWS ONLY",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
