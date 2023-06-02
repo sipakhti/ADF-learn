@@ -1,0 +1,107 @@
+{
+	"name": "archive database to another db",
+	"properties": {
+		"activities": [
+			{
+				"name": "get database table names",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select TABLE_NAME as tableName, TABLE_SCHEMA as tableSchema from INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_domain_name": {
+								"value": "@pipeline().parameters.pl_source_domain_name",
+								"type": "Expression"
+							},
+							"ds_database": {
+								"value": "@pipeline().parameters.pl_source_database",
+								"type": "Expression"
+							},
+							"ds_username": {
+								"value": "@pipeline().parameters.pl_source_username",
+								"type": "Expression"
+							},
+							"ds_password": {
+								"value": "@pipeline().parameters.pl_source_password",
+								"type": "Expression"
+							},
+							"ds_schema": null
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get database table names",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('get database table names').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Execute Pipeline1",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Copy Table to Table",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"pl_database": {
+										"value": "@pipeline().parameters.pl_source_database",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"pl_source_domain_name": {
+				"type": "string"
+			},
+			"pl_source_database": {
+				"type": "string"
+			},
+			"pl_source_username": {
+				"type": "string"
+			},
+			"pl_source_password": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}

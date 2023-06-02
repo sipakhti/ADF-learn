@@ -1,0 +1,52 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsAzureSqlParamed",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ls_domain_name": {
+					"value": "@dataset().ds_domain_name",
+					"type": "Expression"
+				},
+				"ls_database": {
+					"value": "@dataset().ds_database",
+					"type": "Expression"
+				},
+				"ls_username": {
+					"value": "@dataset().ds_username",
+					"type": "Expression"
+				},
+				"ls_password": {
+					"value": "@dataset().ds_password",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"ds_domain_name": {
+				"type": "string"
+			},
+			"ds_database": {
+				"type": "string"
+			},
+			"ds_username": {
+				"type": "string"
+			},
+			"ds_password": {
+				"type": "string"
+			},
+			"ds_schema": {
+				"type": "string",
+				"defaultValue": "none"
+			},
+			"ds_table": {
+				"type": "string",
+				"defaultValue": "none"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
