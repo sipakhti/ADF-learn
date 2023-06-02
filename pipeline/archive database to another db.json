@@ -99,6 +99,10 @@
 										"value": "@{pipeline().parameters.pl_source_database}.@{item().tableSchema}",
 										"type": "Expression"
 									},
+									"pl_log_table": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
 									"pl_sink_database": {
 										"value": "@pipeline().parameters.pl_sink_database",
 										"type": "Expression"
