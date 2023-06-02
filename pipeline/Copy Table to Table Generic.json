@@ -78,120 +78,134 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "copy batch",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": {
-										"value": "SELECT * FROM [@{pipeline().parameters.pl_source_schema}].[@{pipeline().parameters.pl_source_table}]\nORDER BY (SELECT NULL)\nOFFSET @{variables('last_accessed_row')} ROWS\nFETCH NEXT @{pipeline().parameters.pl_batch_size} ROWS ONLY",
-										"type": "Expression"
-									},
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"sink": {
-									"type": "AzureSqlSink",
-									"writeBehavior": "insert",
-									"sqlWriterUseTableLock": false,
-									"tableOption": "autoCreate",
-									"disableMetricsCollection": false
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "AzureSqlGenericParamedSqlAuth",
-									"type": "DatasetReference",
-									"parameters": {
-										"ds_domain_name": {
-											"value": "@pipeline().parameters.pl_source_domain_name",
-											"type": "Expression"
-										},
-										"ds_database": {
-											"value": "@pipeline().parameters.pl_source_database",
-											"type": "Expression"
-										},
-										"ds_username": {
-											"value": "@pipeline().parameters.pl_source_username",
-											"type": "Expression"
-										},
-										"ds_password": {
-											"value": "@pipeline().parameters.pl_source_password",
-											"type": "Expression"
-										},
-										"ds_schema": {
-											"value": "@pipeline().parameters.pl_source_schema",
-											"type": "Expression"
-										},
-										"ds_table": {
-											"value": "@pipeline().parameters.pl_source_table",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "AzureSqlGenericParamedSqlAuth",
-									"type": "DatasetReference",
-									"parameters": {
-										"ds_domain_name": {
-											"value": "@pipeline().parameters.pl_sink_domain_name",
-											"type": "Expression"
-										},
-										"ds_database": {
-											"value": "@pipeline().parameters.pl_sink_database",
-											"type": "Expression"
-										},
-										"ds_username": {
-											"value": "@pipeline().parameters.pl_sink_username",
-											"type": "Expression"
-										},
-										"ds_password": {
-											"value": "@pipeline().parameters.pl_sink_password",
-											"type": "Expression"
-										},
-										"ds_schema": {
-											"value": "@pipeline().parameters.pl_sink_schema",
-											"type": "Expression"
-										},
-										"ds_table": {
-											"value": "@pipeline().parameters.pl_sink_table",
-											"type": "Expression"
-										}
-									}
-								}
-							]
-						},
-						{
-							"name": "Set variable1",
-							"type": "SetVariable",
+							"name": "skip log table",
+							"type": "IfCondition",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "last_accessed_row",
-								"value": {
-									"value": "@string(mul(int(pipeline().parameters.pl_batch_size), item()))",
+								"expression": {
+									"value": "@equals(pipeline().parameters.pl_log_table,item().tableName)",
 									"type": "Expression"
-								}
+								},
+								"ifTrueActivities": [
+									{
+										"name": "copy batch",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureSqlSource",
+												"sqlReaderQuery": {
+													"value": "SELECT * FROM [@{pipeline().parameters.pl_source_schema}].[@{pipeline().parameters.pl_source_table}]\nORDER BY (SELECT NULL)\nOFFSET @{variables('last_accessed_row')} ROWS\nFETCH NEXT @{pipeline().parameters.pl_batch_size} ROWS ONLY",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "AzureSqlSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false,
+												"tableOption": "autoCreate",
+												"disableMetricsCollection": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "AzureSqlGenericParamedSqlAuth",
+												"type": "DatasetReference",
+												"parameters": {
+													"ds_domain_name": {
+														"value": "@pipeline().parameters.pl_source_domain_name",
+														"type": "Expression"
+													},
+													"ds_database": {
+														"value": "@pipeline().parameters.pl_source_database",
+														"type": "Expression"
+													},
+													"ds_username": {
+														"value": "@pipeline().parameters.pl_source_username",
+														"type": "Expression"
+													},
+													"ds_password": {
+														"value": "@pipeline().parameters.pl_source_password",
+														"type": "Expression"
+													},
+													"ds_schema": {
+														"value": "@pipeline().parameters.pl_source_schema",
+														"type": "Expression"
+													},
+													"ds_table": {
+														"value": "@pipeline().parameters.pl_source_table",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "AzureSqlGenericParamedSqlAuth",
+												"type": "DatasetReference",
+												"parameters": {
+													"ds_domain_name": {
+														"value": "@pipeline().parameters.pl_sink_domain_name",
+														"type": "Expression"
+													},
+													"ds_database": {
+														"value": "@pipeline().parameters.pl_sink_database",
+														"type": "Expression"
+													},
+													"ds_username": {
+														"value": "@pipeline().parameters.pl_sink_username",
+														"type": "Expression"
+													},
+													"ds_password": {
+														"value": "@pipeline().parameters.pl_sink_password",
+														"type": "Expression"
+													},
+													"ds_schema": {
+														"value": "@pipeline().parameters.pl_sink_schema",
+														"type": "Expression"
+													},
+													"ds_table": {
+														"value": "@pipeline().parameters.pl_sink_table",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									},
+									{
+										"name": "Set variable1",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "last_accessed_row",
+											"value": {
+												"value": "@string(mul(int(pipeline().parameters.pl_batch_size), item()))",
+												"type": "Expression"
+											}
+										}
+									}
+								]
 							}
 						}
 					]
