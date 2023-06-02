@@ -1,5 +1,5 @@
 {
-	"name": "Task1",
+	"name": "Copy Table to Table",
 	"properties": {
 		"description": "\n1) Fetching limited rows\n\n2) Copy the rows in an another , By changing the one filed \n\n3) Table , Log how many rows you processed , pipeline name , pipeline run id , run date \n\nsource table , target table\n",
 		"activities": [
