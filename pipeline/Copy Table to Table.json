@@ -19,29 +19,39 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[dbo].[sp_get_row_count]",
-						"storedProcedureParameters": {
-							"table_name": {
-								"type": "String",
-								"value": {
-									"value": "@pipeline().parameters.pl_source_table",
-									"type": "Expression"
-								}
-							}
+						"sqlReaderQuery": {
+							"value": "SELECT COUNT(*) as row_count FROM @{pipeline().parameters.pl_source_table}",
+							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "AzureSqlGenericConnection",
+						"referenceName": "AzureSqlGenericParamedSqlAuth",
 						"type": "DatasetReference",
 						"parameters": {
-							"ds_table": {
-								"value": "@pipeline().parameters.pl_source_table",
+							"ds_domain_name": {
+								"value": "@pipeline().parameters.pl_source_domain_name",
+								"type": "Expression"
+							},
+							"ds_database": {
+								"value": "@pipeline().parameters.pl_source_database",
+								"type": "Expression"
+							},
+							"ds_username": {
+								"value": "@pipeline().parameters.pl_source_username",
+								"type": "Expression"
+							},
+							"ds_password": {
+								"value": "@pipeline().parameters.pl_source_password",
 								"type": "Expression"
 							},
 							"ds_schema": {
 								"value": "@pipeline().parameters.pl_source_schema",
+								"type": "Expression"
+							},
+							"ds_table": {
+								"value": "@pipeline().parameters.pl_source_table",
 								"type": "Expression"
 							}
 						}
@@ -216,15 +226,31 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "AzureSqlGenericConnection",
+									"referenceName": "AzureSqlGenericParamedSqlAuth",
 									"type": "DatasetReference",
 									"parameters": {
-										"ds_table": {
-											"value": "@pipeline().parameters.pl_source_table",
+										"ds_domain_name": {
+											"value": "@pipeline().parameters.pl_source_domain_name",
+											"type": "Expression"
+										},
+										"ds_database": {
+											"value": "@pipeline().parameters.pl_source_database",
+											"type": "Expression"
+										},
+										"ds_username": {
+											"value": "@pipeline().parameters.pl_source_username",
+											"type": "Expression"
+										},
+										"ds_password": {
+											"value": "@pipeline().parameters.pl_source_password",
 											"type": "Expression"
 										},
 										"ds_schema": {
 											"value": "@pipeline().parameters.pl_source_schema",
+											"type": "Expression"
+										},
+										"ds_table": {
+											"value": "@pipeline().parameters.pl_source_table",
 											"type": "Expression"
 										}
 									}
@@ -265,7 +291,7 @@
 			}
 		],
 		"parameters": {
-			"pl_database": {
+			"pl_source_database": {
 				"type": "string",
 				"defaultValue": "discord-chat"
 			},
@@ -292,6 +318,34 @@
 			"pl_log_table": {
 				"type": "string",
 				"defaultValue": "logs"
+			},
+			"pl_sink_database": {
+				"type": "string",
+				"defaultValue": "discord-chat"
+			},
+			"pl_sink_domain_name": {
+				"type": "string",
+				"defaultValue": "datametic-adf-learning.database.windows.net"
+			},
+			"pl_source_domain_name": {
+				"type": "string",
+				"defaultValue": "datametic-adf-learning.database.windows.net"
+			},
+			"pl_source_username": {
+				"type": "string",
+				"defaultValue": "sipakhti"
+			},
+			"pl_source_password": {
+				"type": "string",
+				"defaultValue": "Bingo_12345"
+			},
+			"pl_sink_username": {
+				"type": "string",
+				"defaultValue": "sipakhti"
+			},
+			"pl_sink_password": {
+				"type": "string",
+				"defaultValue": "Bingo_12345"
 			}
 		},
 		"variables": {
