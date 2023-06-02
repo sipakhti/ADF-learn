@@ -49,7 +49,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "table iterator",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -68,7 +68,7 @@
 					"isSequential": false,
 					"activities": [
 						{
-							"name": "Execute Pipeline1",
+							"name": "Table Copy",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
