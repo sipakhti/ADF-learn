@@ -184,25 +184,9 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderStoredProcedureName": {
-										"value": "@concat('[',pipeline().parameters.pl_source_schema,'].[get_modified_rows_',pipeline().parameters.pl_source_table,']')",
+									"sqlReaderQuery": {
+										"value": "SELECT * FROM [@{pipeline().parameters.pl_source_schema}].[pipeline().parameters.pl_source_table]\nORDER BY (SELECT NULL)\nOFFSET @{variables('last_accessed_row')} ROWS\nFETCH NEXT @{pipeline().parameters.pl_batch_size} ROWS ONLY",
 										"type": "Expression"
-									},
-									"storedProcedureParameters": {
-										"batch_size": {
-											"type": "Int32",
-											"value": {
-												"value": "@pipeline().parameters.pl_batch_size",
-												"type": "Expression"
-											}
-										},
-										"last_accessed_row": {
-											"type": "Int32",
-											"value": {
-												"value": "@variables('last_accessed_row')",
-												"type": "Expression"
-											}
-										}
 									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
@@ -258,15 +242,31 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "AzureSqlGenericConnection",
+									"referenceName": "AzureSqlGenericParamedSqlAuth",
 									"type": "DatasetReference",
 									"parameters": {
-										"ds_table": {
-											"value": "@pipeline().parameters.pl_sink_table",
+										"ds_domain_name": {
+											"value": "@pipeline().parameters.pl_sink_domain_name",
+											"type": "Expression"
+										},
+										"ds_database": {
+											"value": "@pipeline().parameters.pl_sink_database",
+											"type": "Expression"
+										},
+										"ds_username": {
+											"value": "@pipeline().parameters.pl_sink_username",
+											"type": "Expression"
+										},
+										"ds_password": {
+											"value": "@pipeline().parameters.pl_sink_password",
 											"type": "Expression"
 										},
 										"ds_schema": {
 											"value": "@pipeline().parameters.pl_sink_schema",
+											"type": "Expression"
+										},
+										"ds_table": {
+											"value": "@pipeline().parameters.pl_sink_table",
 											"type": "Expression"
 										}
 									}
