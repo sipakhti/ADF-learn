@@ -104,7 +104,7 @@
 											"source": {
 												"type": "AzureSqlSource",
 												"sqlReaderQuery": {
-													"value": "SELECT * FROM [@{pipeline().parameters.pl_source_schema}].[@{pipeline().parameters.pl_source_table}]\nORDER BY (SELECT NULL)\nOFFSET @{variables('last_accessed_row')} ROWS\nFETCH NEXT @{pipeline().parameters.pl_batch_size} ROWS ONLY",
+													"value": "SELECT * FROM [@{pipeline().parameters.pl_source_schema}].[@{pipeline().parameters.pl_source_table}]\nORDER BY (SELECT NULL)\nOFFSET @{mul(int(pipeline().parameters.pl_batch_size), item())} ROWS\nFETCH NEXT @{pipeline().parameters.pl_batch_size} ROWS ONLY",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -191,19 +191,6 @@
 												}
 											}
 										]
-									},
-									{
-										"name": "set last accessed row",
-										"type": "SetVariable",
-										"dependsOn": [],
-										"userProperties": [],
-										"typeProperties": {
-											"variableName": "last_accessed_row",
-											"value": {
-												"value": "@string(mul(int(pipeline().parameters.pl_batch_size), item()))",
-												"type": "Expression"
-											}
-										}
 									}
 								]
 							}
@@ -376,12 +363,6 @@
 			"pl_sink_password": {
 				"type": "string",
 				"defaultValue": "Bingo_12345"
-			}
-		},
-		"variables": {
-			"last_accessed_row": {
-				"type": "String",
-				"defaultValue": "0"
 			}
 		},
 		"annotations": []
