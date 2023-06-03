@@ -87,7 +87,7 @@
 									"value": "@equals(pipeline().parameters.pl_log_table,pipeline().parameters.pl_source_table)",
 									"type": "Expression"
 								},
-								"ifTrueActivities": [
+								"ifFalseActivities": [
 									{
 										"name": "copy batch",
 										"type": "Copy",
