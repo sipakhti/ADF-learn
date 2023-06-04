@@ -122,7 +122,7 @@
 											}
 										},
 										"offset": {
-											"type": "Decimal",
+											"type": "Int32",
 											"value": {
 												"value": "@mul(item(), int(pipeline().parameters.pl_batch_size))",
 												"type": "Expression"
