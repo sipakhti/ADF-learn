@@ -242,7 +242,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(div(activity('get_table_total_rows').output.firstRow.row_count, int(pipeline().parameters.pl_batch_size)), item())\n\n",
+									"value": "@equals(div(activity('get_table_total_rows').output.firstRow.totalRows, int(pipeline().parameters.pl_batch_size)), item())\n\n",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
