@@ -92,7 +92,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@range(0,add(div(activity('get_table_total_rows').output.firstRow.row_count, int(pipeline().parameters.pl_batch_size)),1))",
+						"value": "@range(0,add(div(activity('get_table_total_rows').output.firstRow.totalRows, int(pipeline().parameters.pl_batch_size)),1))",
 						"type": "Expression"
 					},
 					"isSequential": true,
