@@ -148,6 +148,10 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
+									"preCopyScript": {
+										"value": "TUNCATE TABLE [@{pipeline().parameters.pl_sink_schema}].[@{pipeline().parameters.pl_sink_table}]",
+										"type": "Expression"
+									},
 									"writeBehavior": "insert",
 									"sqlWriterUseTableLock": false,
 									"tableOption": "autoCreate",
