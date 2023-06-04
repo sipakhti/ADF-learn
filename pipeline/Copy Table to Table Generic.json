@@ -261,6 +261,67 @@
 									}
 								]
 							}
+						},
+						{
+							"name": "Log Activity Failure Row Copier",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Row Copier",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[logActivityFailure]",
+								"storedProcedureParameters": {
+									"failureMessage": {
+										"value": {
+											"value": "@activity('Row Copier').error?.message",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"pipelineId": {
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "lsAzureSqlParamed",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"ls_domain_name": {
+										"value": "@pipeline().parameters.pl_source_domain_name",
+										"type": "Expression"
+									},
+									"ls_database": {
+										"value": "@pipeline().parameters.pl_source_database",
+										"type": "Expression"
+									},
+									"ls_username": {
+										"value": "@pipeline().parameters.pl_source_username",
+										"type": "Expression"
+									},
+									"ls_password": {
+										"value": "@pipeline().parameters.pl_source_password",
+										"type": "Expression"
+									}
+								}
+							}
 						}
 					]
 				}
@@ -389,6 +450,67 @@
 								"type": "Expression"
 							},
 							"type": "Decimal"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "lsAzureSqlParamed",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"ls_domain_name": {
+							"value": "@pipeline().parameters.pl_source_domain_name",
+							"type": "Expression"
+						},
+						"ls_database": {
+							"value": "@pipeline().parameters.pl_source_database",
+							"type": "Expression"
+						},
+						"ls_username": {
+							"value": "@pipeline().parameters.pl_source_username",
+							"type": "Expression"
+						},
+						"ls_password": {
+							"value": "@pipeline().parameters.pl_source_password",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Log Activity Failure lookup",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "get_table_total_rows",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[logActivityFailure]",
+					"storedProcedureParameters": {
+						"failureMessage": {
+							"value": {
+								"value": "@activity('Log Activity Start').error?.message",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"pipelineId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
 						}
 					}
 				},

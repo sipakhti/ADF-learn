@@ -133,67 +133,6 @@
 									}
 								}
 							}
-						},
-						{
-							"name": "Log Activity Failure",
-							"type": "SqlServerStoredProcedure",
-							"dependsOn": [
-								{
-									"activity": "Table Copy",
-									"dependencyConditions": [
-										"Failed"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"storedProcedureName": "[dbo].[logActivityFailure]",
-								"storedProcedureParameters": {
-									"failureMessage": {
-										"value": {
-											"value": "@activity('Table Copy').error?.message",
-											"type": "Expression"
-										},
-										"type": "String"
-									},
-									"pipelineId": {
-										"value": {
-											"value": "@activity('Table Copy').output.pipelineRunId",
-											"type": "Expression"
-										},
-										"type": "String"
-									}
-								}
-							},
-							"linkedServiceName": {
-								"referenceName": "lsAzureSqlParamed",
-								"type": "LinkedServiceReference",
-								"parameters": {
-									"ls_domain_name": {
-										"value": "@pipeline().parameters.pl_source_domain_name",
-										"type": "Expression"
-									},
-									"ls_database": {
-										"value": "@pipeline().parameters.pl_source_database",
-										"type": "Expression"
-									},
-									"ls_username": {
-										"value": "@pipeline().parameters.pl_source_username",
-										"type": "Expression"
-									},
-									"ls_password": {
-										"value": "@pipeline().parameters.pl_source_password",
-										"type": "Expression"
-									}
-								}
-							}
 						}
 					]
 				}
