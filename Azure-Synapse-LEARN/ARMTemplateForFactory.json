@@ -178,7 +178,7 @@
 										"sink": {
 											"type": "AzureSqlSink",
 											"preCopyScript": {
-												"value": "TUNCATE TABLE [@{pipeline().parameters.pl_sink_schema}].[@{pipeline().parameters.pl_sink_table}]",
+												"value": "TRUNCATE TABLE [@{pipeline().parameters.pl_sink_schema}].[@{pipeline().parameters.pl_sink_table}]",
 												"type": "Expression"
 											},
 											"writeBehavior": "insert",
@@ -1934,6 +1934,7 @@
 					},
 					"mode": "Microbatch"
 				},
+				"status": "Stopped",
 				"allowVNetOverride": false
 			},
 			"dependsOn": [
