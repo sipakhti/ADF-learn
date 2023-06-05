@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "Azure-Synapse-LEARN"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"lsAzureSQL_connectionString": {
+			"value": ""
+		},
+		"lsAzureSqlParamed_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().ls_domain_name};Initial Catalog=@{linkedService().ls_database};User ID=@{linkedService().ls_username};Password=@{linkedService().ls_password}"
+		}
+	}
+}
