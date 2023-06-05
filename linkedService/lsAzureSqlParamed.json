@@ -4,16 +4,20 @@
 	"properties": {
 		"parameters": {
 			"ls_domain_name": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "datametic-adf-learning.database.windows.net"
 			},
 			"ls_database": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "backup"
 			},
 			"ls_username": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "sipakhti"
 			},
 			"ls_password": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Bingo_12345"
 			}
 		},
 		"annotations": [],
