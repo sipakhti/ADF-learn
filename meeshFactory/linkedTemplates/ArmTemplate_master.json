@@ -1,0 +1,85 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "meeshFactory"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"GenericStorage_connection_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'GenericStorage_connection'"
+		},
+		"LS_dp203workspace1234_meeshpool_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_dp203workspace1234_meeshpool'"
+		},
+		"lsAzureSQL_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'lsAzureSQL'"
+		},
+		"lsAzureSqlParamed_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'lsAzureSqlParamed'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().ls_domain_name};Initial Catalog=@{linkedService().ls_database};User ID=@{linkedService().ls_username};Password=@{linkedService().ls_password}"
+		},
+		"GenericStorage_connection_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dp203geneicstorage.dfs.core.windows.net/"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "meeshFactory_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStorage1_connectionString": {
+						"value": "[parameters('AzureBlobStorage1_connectionString')]"
+					},
+					"GenericStorage_connection_accountKey": {
+						"value": "[parameters('GenericStorage_connection_accountKey')]"
+					},
+					"LS_dp203workspace1234_meeshpool_connectionString": {
+						"value": "[parameters('LS_dp203workspace1234_meeshpool_connectionString')]"
+					},
+					"lsAzureSQL_connectionString": {
+						"value": "[parameters('lsAzureSQL_connectionString')]"
+					},
+					"lsAzureSqlParamed_connectionString": {
+						"value": "[parameters('lsAzureSqlParamed_connectionString')]"
+					},
+					"GenericStorage_connection_properties_typeProperties_url": {
+						"value": "[parameters('GenericStorage_connection_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "meeshFactory"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"GenericStorage_connection_accountKey": {
+			"value": ""
+		},
+		"LS_dp203workspace1234_meeshpool_connectionString": {
+			"value": ""
+		},
+		"lsAzureSQL_connectionString": {
+			"value": ""
+		},
+		"lsAzureSqlParamed_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().ls_domain_name};Initial Catalog=@{linkedService().ls_database};User ID=@{linkedService().ls_username};Password=@{linkedService().ls_password}"
+		},
+		"GenericStorage_connection_properties_typeProperties_url": {
+			"value": "https://dp203geneicstorage.dfs.core.windows.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
