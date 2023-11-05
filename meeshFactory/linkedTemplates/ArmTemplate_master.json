@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
+		"AzureSqlMeesh_demoData_connection_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlMeesh_demoData_connection'"
+		},
 		"GenericStorage_connection_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'GenericStorage_connection'"
@@ -61,6 +65,9 @@
 					},
 					"AzureBlobStorage1_connectionString": {
 						"value": "[parameters('AzureBlobStorage1_connectionString')]"
+					},
+					"AzureSqlMeesh_demoData_connection_connectionString": {
+						"value": "[parameters('AzureSqlMeesh_demoData_connection_connectionString')]"
 					},
 					"GenericStorage_connection_accountKey": {
 						"value": "[parameters('GenericStorage_connection_accountKey')]"
