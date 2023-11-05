@@ -1,5 +1,5 @@
 {
-	"name": "DestinationDataset_oue",
+	"name": "dsAzureSynapseMeeshPool",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_dp203workspace1234_meeshpool",

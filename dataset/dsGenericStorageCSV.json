@@ -1,5 +1,5 @@
 {
-	"name": "SourceDataset_oue",
+	"name": "dsGenericStorageCSV",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "GenericStorage_connection",
