@@ -328,7 +328,9 @@
 					},
 					{
 						"name": "Time",
-						"type": "varchar"
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
 					},
 					{
 						"name": "Subscription",
@@ -2281,8 +2283,8 @@
 										},
 										"sink": {
 											"name": "Time",
-											"type": "String",
-											"physicalType": "varchar"
+											"type": "DateTime",
+											"physicalType": "datetime"
 										}
 									},
 									{
