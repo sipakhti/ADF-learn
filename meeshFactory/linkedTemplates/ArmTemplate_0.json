@@ -227,7 +227,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DestinationDataset_oue')]",
+			"name": "[concat(parameters('factoryName'), '/dsAzureSynapseMeeshPool')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -295,7 +295,51 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SourceDataset_oue')]",
+			"name": "[concat(parameters('factoryName'), '/dsCopyFileToFolder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"dsContainer": {
+						"type": "string"
+					},
+					"dsFolder": {
+						"type": "string"
+					},
+					"dsFileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().dsFileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().dsFolder",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().dsContainer",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsGenericStorageCSV')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -365,50 +409,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/GenericStorage_connection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dsCopyFileToFolder')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"dsContainer": {
-						"type": "string"
-					},
-					"dsFolder": {
-						"type": "string"
-					},
-					"dsFileName": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().dsFileName",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@dataset().dsFolder",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().dsContainer",
-							"type": "Expression"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
 			]
 		},
 		{
@@ -1866,14 +1866,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "SourceDataset_oue",
+								"referenceName": "dsGenericStorageCSV",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "DestinationDataset_oue",
+								"referenceName": "dsAzureSynapseMeeshPool",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1886,8 +1886,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SourceDataset_oue')]",
-				"[concat(variables('factoryId'), '/datasets/DestinationDataset_oue')]"
+				"[concat(variables('factoryId'), '/datasets/dsGenericStorageCSV')]",
+				"[concat(variables('factoryId'), '/datasets/dsAzureSynapseMeeshPool')]"
 			]
 		},
 		{
