@@ -1,0 +1,9 @@
+{
+	"name": "meeshFactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "3864f1f1-36cb-4af2-94f4-a8df6275cf1f",
+		"tenantId": "60d5c09f-094e-4b0d-96f6-6995060f02a2"
+	}
+}
