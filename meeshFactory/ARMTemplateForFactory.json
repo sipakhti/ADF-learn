@@ -2725,6 +2725,11 @@
 				"type": "AzureSqlDWTable",
 				"schema": [
 					{
+						"name": "customerSK",
+						"type": "int",
+						"precision": 10
+					},
+					{
 						"name": "CustomerID",
 						"type": "int",
 						"precision": 10
@@ -3939,6 +3944,12 @@
 						},
 						{
 							"name": "ProductSK"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "CustomerSK"
 						}
 					],
 					"scriptLines": [
@@ -4031,9 +4042,20 @@
 						"select1 keyGenerate(output(ProductSK as long),",
 						"     startAt: 1L,",
 						"     stepValue: 1L) ~> ProductSK",
-						"CustomerStream sink(allowSchemaDrift: true,",
+						"CustomerStream select(mapColumn(",
+						"          CustomerID,",
+						"          CompanyName,",
+						"          SalesPerson",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 keyGenerate(output(CustomerSK as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> CustomerSK",
+						"CustomerSK sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
+						"          customerSK as integer,",
 						"          CustomerID as integer,",
 						"          CompanyName as string,",
 						"          SalesPerson as string",
@@ -4049,6 +4071,7 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
+						"          customerSK = CustomerSK,",
 						"          CustomerID,",
 						"          CompanyName,",
 						"          SalesPerson",
