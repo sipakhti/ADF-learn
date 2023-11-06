@@ -187,7 +187,184 @@
 				]
 			},
 			{
-				"name": "Copy PARQUET to Azure Synapse Pool",
+				"name": "Copy PARQUET to Azure Synapse Pool - BULK INSERT",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "Copy CSV to PARQUET",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ParquetSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*.parquet",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "ParquetReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"writeBehavior": "Insert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CorrelationID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Correlationid",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OperationName",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Operationname",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Status",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EventCategory",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Eventcategory",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Level",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Level",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Time",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Time",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Subscription",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Subscription",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EventInitiatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Eventinitiatedby",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ResourceType",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Resourcetype",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ResourceGroup",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Resourcegroup",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Resource",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Resource",
+									"type": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsGenericStoragePARQUET",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsAzureSynapseMeeshPoolPARQUETlogs",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "sectionFive",
+							"tableName": "logdata_parquet"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy PARQUET to Azure Synapse Pool - POLYBASE",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -361,7 +538,11 @@
 				"outputs": [
 					{
 						"referenceName": "dsAzureSynapseMeeshPoolPARQUETlogs",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "sectionFive",
+							"tableName": "logdata_parquet_polybase"
+						}
 					}
 				]
 			}

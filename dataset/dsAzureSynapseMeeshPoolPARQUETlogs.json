@@ -5,6 +5,14 @@
 			"referenceName": "LS_dp203workspace1234_meeshpool",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"schema": {
+				"type": "string"
+			},
+			"tableName": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "AzureSqlDWTable",
 		"schema": [
@@ -56,8 +64,14 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "sectionFive",
-			"table": "logdata_parquet"
+			"schema": {
+				"value": "@dataset().schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
 		}
 	}
 }
