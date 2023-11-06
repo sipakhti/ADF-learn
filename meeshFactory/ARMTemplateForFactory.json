@@ -2845,6 +2845,12 @@
 						"type": "money",
 						"precision": 19,
 						"scale": 4
+					},
+					{
+						"name": "TotalAmount",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
 					}
 				],
 				"typeProperties": {
@@ -4100,6 +4106,12 @@
 						{
 							"name": "SalesOrderDetailJoinSalesOrderHeader",
 							"description": "Left outer join on 'SalesOrderDetailStream' and 'SalesOrderHeaderStream'"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "TotalAmount"
 						}
 					],
 					"scriptLines": [
@@ -4151,7 +4163,19 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> SalesOrderDetailJoinSalesOrderHeader",
-						"SalesOrderDetailJoinSalesOrderHeader sink(allowSchemaDrift: true,",
+						"SalesOrderDetailJoinSalesOrderHeader select(mapColumn(",
+						"          SalesOrderID = SalesOrderDetailStream@SalesOrderID,",
+						"          ProductID,",
+						"          CustomerID,",
+						"          OrderQty,",
+						"          UnitPrice,",
+						"          OrderDate,",
+						"          TaxAmt",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 derive(TotalAmount = multiply(OrderQty,UnitPrice)) ~> TotalAmount",
+						"TotalAmount sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          ProductID as integer,",
@@ -4160,7 +4184,8 @@
 						"          OrderQty as integer,",
 						"          UnitPrice as decimal(19,4),",
 						"          OrderDate as timestamp,",
-						"          TaxAmt as decimal(19,4)",
+						"          TaxAmt as decimal(19,4),",
+						"          TotalAmount as decimal(19,4)",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -4174,12 +4199,13 @@
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          ProductID,",
-						"          SalesOrderID = SalesOrderDetailStream@SalesOrderID,",
+						"          SalesOrderID,",
 						"          CustomerID,",
 						"          OrderQty,",
 						"          UnitPrice,",
 						"          OrderDate,",
-						"          TaxAmt",
+						"          TaxAmt,",
+						"          TotalAmount",
 						"     )) ~> SectionFiveFactSalesTableSink"
 					]
 				}
