@@ -2747,6 +2747,12 @@
 						},
 						{
 							"name": "JoinProductModelStream"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "ProductSK"
 						}
 					],
 					"scriptLines": [
@@ -2826,6 +2832,19 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> JoinProductModelStream",
+						"JoinProductModelStream select(mapColumn(",
+						"          ProductID,",
+						"          ProductModelID = ProductStream@ProductModelID,",
+						"          ProductCategoryID = ProductStream@ProductCategoryID,",
+						"          ProductName = ProductStream@Name,",
+						"          ProductModelName = ProductModelStream@Name,",
+						"          ProductCategoryName = ProductCategoryStream@Name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 keyGenerate(output(ProductSK as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> ProductSK",
 						"CustomerStream sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -2848,9 +2867,10 @@
 						"          CompanyName,",
 						"          SalesPerson",
 						"     )) ~> DimCustomer",
-						"JoinProductModelStream sink(allowSchemaDrift: true,",
+						"ProductSK sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
+						"          ProductSK as integer,",
 						"          ProductID as integer,",
 						"          ProductModelID as integer,",
 						"          ProductCategoryID as integer,",
@@ -2869,12 +2889,13 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
+						"          ProductSK,",
 						"          ProductID,",
-						"          ProductModelID = ProductStream@ProductModelID,",
-						"          ProductCategoryID = ProductStream@ProductCategoryID,",
-						"          ProductName = ProductStream@Name,",
-						"          ProductModelName = ProductModelStream@Name,",
-						"          ProductCategoryName = ProductCategoryStream@Name",
+						"          ProductModelID,",
+						"          ProductCategoryID,",
+						"          ProductName,",
+						"          ProductModelName,",
+						"          ProductCategoryName",
 						"     )) ~> DimProductSinkStream"
 					]
 				}

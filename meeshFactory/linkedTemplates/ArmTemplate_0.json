@@ -376,6 +376,11 @@
 				"type": "AzureSqlDWTable",
 				"schema": [
 					{
+						"name": "ProductSK",
+						"type": "int",
+						"precision": 10
+					},
+					{
 						"name": "ProductID",
 						"type": "int",
 						"precision": 10
