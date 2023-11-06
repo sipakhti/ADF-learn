@@ -2886,7 +2886,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "Customer01.csv",
+						"fileName": "Customer02.csv",
 						"folderPath": "Customers",
 						"fileSystem": "csv"
 					},
@@ -4239,6 +4239,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "ProductModelStream"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSynapseAnalyticsDimCustomer_MDF",
+								"type": "DatasetReference"
+							},
+							"name": "GETMAXCustomerSK"
 						}
 					],
 					"sinks": [
@@ -4255,6 +4262,9 @@
 								"type": "DatasetReference"
 							},
 							"name": "DimProductSinkStream"
+						},
+						{
+							"name": "CustomerSKSink"
 						}
 					],
 					"transformations": [
@@ -4275,6 +4285,9 @@
 						},
 						{
 							"name": "CustomerSK"
+						},
+						{
+							"name": "CustomerSKupdated"
 						}
 					],
 					"scriptLines": [
@@ -4342,6 +4355,15 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> ProductModelStream",
+						"source(output(",
+						"          customerSK as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select  MAX(customerSK) as customerSK from sectionFive.DimCustomer_MDF',",
+						"     format: 'query',",
+						"     staged: true) ~> GETMAXCustomerSK",
 						"ProductStream, ProductCategoryStream join(ProductStream@ProductCategoryID == ProductCategoryStream@ProductCategoryID,",
 						"     joinType:'left',",
 						"     matchType:'exact',",
@@ -4375,7 +4397,8 @@
 						"select2 keyGenerate(output(CustomerSK as long),",
 						"     startAt: 1L,",
 						"     stepValue: 1L) ~> CustomerSK",
-						"CustomerSK sink(allowSchemaDrift: true,",
+						"CustomerSK derive(CustomerSK = CustomerSK + CustomerSKSink#outputs()[1].CustomerSKMAX) ~> CustomerSKupdated",
+						"CustomerSKupdated sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          customerSK as integer,",
@@ -4392,6 +4415,7 @@
 						"     allowCopyCommand: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 3,",
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          customerSK = CustomerSK,",
@@ -4419,6 +4443,7 @@
 						"     allowCopyCommand: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          ProductSK,",
@@ -4428,7 +4453,17 @@
 						"          ProductName,",
 						"          ProductModelName,",
 						"          ProductCategoryName",
-						"     )) ~> DimProductSinkStream"
+						"     )) ~> DimProductSinkStream",
+						"GETMAXCustomerSK sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          CustomerSKMAX = customerSK",
+						"     )) ~> CustomerSKSink"
 					]
 				}
 			},
