@@ -1,5 +1,5 @@
 {
-	"name": "dataflow_DimensionTables",
+	"name": "dataflow_DimensionTables_From_CSV",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
