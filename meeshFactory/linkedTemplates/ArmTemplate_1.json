@@ -2765,7 +2765,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "AzureSqlCustomerTable",
+								"referenceName": "CustomerCSV",
 								"type": "DatasetReference"
 							},
 							"name": "CustomerStream"
@@ -2830,7 +2830,7 @@
 					],
 					"scriptLines": [
 						"source(output(",
-						"          CustomerID as integer,",
+						"          CustomerID as short,",
 						"          NameStyle as boolean,",
 						"          Title as string,",
 						"          FirstName as string,",
@@ -2843,13 +2843,11 @@
 						"          Phone as string,",
 						"          PasswordHash as string,",
 						"          PasswordSalt as string,",
-						"          rowguid as string,",
-						"          ModifiedDate as timestamp",
+						"          rowguid as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> CustomerStream",
+						"     ignoreNoFilesFound: false) ~> CustomerStream",
 						"source(output(",
 						"          ProductID as integer,",
 						"          Name as string,",
@@ -2945,6 +2943,7 @@
 						"     allowCopyCommand: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          customerSK = CustomerSK,",
@@ -2972,6 +2971,7 @@
 						"     allowCopyCommand: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          ProductSK,",
