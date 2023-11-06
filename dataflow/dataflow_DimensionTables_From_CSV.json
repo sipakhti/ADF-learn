@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "AzureSqlCustomerTable",
+						"referenceName": "CustomerCSV",
 						"type": "DatasetReference"
 					},
 					"name": "CustomerStream"
@@ -71,8 +71,8 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          CustomerID as integer,",
-				"          NameStyle as boolean,",
+				"          CustomerID as string,",
+				"          NameStyle as string,",
 				"          Title as string,",
 				"          FirstName as string,",
 				"          MiddleName as string,",
@@ -84,13 +84,11 @@
 				"          Phone as string,",
 				"          PasswordHash as string,",
 				"          PasswordSalt as string,",
-				"          rowguid as string,",
-				"          ModifiedDate as timestamp",
+				"          rowguid as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> CustomerStream",
+				"     ignoreNoFilesFound: false) ~> CustomerStream",
 				"source(output(",
 				"          ProductID as integer,",
 				"          Name as string,",
