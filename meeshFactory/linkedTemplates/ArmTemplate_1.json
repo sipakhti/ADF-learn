@@ -3126,6 +3126,20 @@
 								"type": "DatasetReference"
 							},
 							"name": "GETMAXCustomerSK"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSynapseAnalyticsDimProduct",
+								"type": "DatasetReference"
+							},
+							"name": "DimProductLatest"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSynapseAnalyticsDimCustomer_MDF",
+								"type": "DatasetReference"
+							},
+							"name": "DimCustomerLatest"
 						}
 					],
 					"sinks": [
@@ -3168,11 +3182,23 @@
 						},
 						{
 							"name": "CustomerSKupdated"
+						},
+						{
+							"name": "DoesCustomerExists"
+						},
+						{
+							"name": "RowVerifier"
+						},
+						{
+							"name": "DoesProductExists"
+						},
+						{
+							"name": "ProductRowsVerifier"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          CustomerID as string,",
+						"          CustomerID as integer,",
 						"          NameStyle as string,",
 						"          Title as string,",
 						"          FirstName as string,",
@@ -3246,21 +3272,46 @@
 						"     resultSet: true,",
 						"     format: 'procedure',",
 						"     staged: true) ~> GETMAXCustomerSK",
-						"ProductStream, ProductCategoryStream join(ProductStream@ProductCategoryID == ProductCategoryStream@ProductCategoryID,",
+						"source(output(",
+						"          ProductSK as integer,",
+						"          ProductID as integer,",
+						"          ProductModelID as integer,",
+						"          ProductCategoryID as integer,",
+						"          ProductName as string,",
+						"          ProductModelName as string,",
+						"          ProductCategoryName as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table',",
+						"     staged: true) ~> DimProductLatest",
+						"source(output(",
+						"          customerSK as integer,",
+						"          CustomerID as integer,",
+						"          CompanyName as string,",
+						"          SalesPerson as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table',",
+						"     staged: true) ~> DimCustomerLatest",
+						"ProductRowsVerifier@ProductLoadRows, ProductCategoryStream join(ProductRowsVerifier@ProductLoadRows@ProductCategoryID == ProductCategoryStream@ProductCategoryID,",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> ProductJoinCategory",
-						"ProductJoinCategory, ProductModelStream join(ProductStream@ProductModelID == ProductModelStream@ProductModelID,",
+						"ProductJoinCategory, ProductModelStream join(ProductRowsVerifier@ProductLoadRows@ProductModelID == ProductModelStream@ProductModelID,",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> JoinProductModelStream",
 						"JoinProductModelStream select(mapColumn(",
 						"          ProductID,",
-						"          ProductModelID = ProductStream@ProductModelID,",
-						"          ProductCategoryID = ProductStream@ProductCategoryID,",
-						"          ProductName = ProductStream@Name,",
+						"          ProductModelID = ProductRowsVerifier@ProductLoadRows@ProductModelID,",
+						"          ProductCategoryID = ProductRowsVerifier@ProductLoadRows@ProductCategoryID,",
+						"          ProductName = ProductRowsVerifier@ProductLoadRows@Name,",
 						"          ProductModelName = ProductModelStream@Name,",
 						"          ProductCategoryName = ProductCategoryStream@Name",
 						"     ),",
@@ -3269,7 +3320,7 @@
 						"select1 keyGenerate(output(ProductSK as long),",
 						"     startAt: 1L,",
 						"     stepValue: 1L) ~> ProductSK",
-						"CustomerStream select(mapColumn(",
+						"RowVerifier@CustomerLoadRows select(mapColumn(",
 						"          CustomerID,",
 						"          CompanyName,",
 						"          SalesPerson",
@@ -3280,6 +3331,16 @@
 						"     startAt: 1L,",
 						"     stepValue: 1L) ~> CustomerSK",
 						"CustomerSK derive(CustomerSK = CustomerSK + CustomerSKSink#outputs()[1].CustomerSKMAX) ~> CustomerSKupdated",
+						"CustomerStream, DimCustomerLatest exists(CustomerStream@CustomerID == DimCustomerLatest@CustomerID,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> DoesCustomerExists",
+						"DoesCustomerExists split(!isNan(CustomerID),",
+						"     disjoint: false) ~> RowVerifier@(CustomerLoadRows, CustomerSkip)",
+						"ProductStream, DimProductLatest exists(ProductStream@ProductID == DimProductLatest@ProductID,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> DoesProductExists",
+						"DoesProductExists split(!isNan(ProductID),",
+						"     disjoint: false) ~> ProductRowsVerifier@(ProductLoadRows, ProductSkip)",
 						"CustomerSKupdated sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -3320,7 +3381,6 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
-						"     truncate:true,",
 						"     format: 'table',",
 						"     staged: true,",
 						"     allowCopyCommand: true,",
@@ -3524,6 +3584,8 @@
 									"ProductCategoryStream": {},
 									"ProductModelStream": {},
 									"GETMAXCustomerSK": {},
+									"DimProductLatest": {},
+									"DimCustomerLatest": {},
 									"DimCustomer": {},
 									"DimProductSinkStream": {},
 									"CustomerSKSink": {}
@@ -3540,7 +3602,8 @@
 								"coreCount": 8,
 								"computeType": "General"
 							},
-							"traceLevel": "Fine"
+							"traceLevel": "Fine",
+							"sourceStagingConcurrency": 1
 						}
 					}
 				],
