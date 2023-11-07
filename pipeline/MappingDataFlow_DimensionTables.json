@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow_DimensionTables",
+						"referenceName": "dataflow_DimensionTables_From_CSV",
 						"type": "DataFlowReference"
 					},
 					"staging": {
