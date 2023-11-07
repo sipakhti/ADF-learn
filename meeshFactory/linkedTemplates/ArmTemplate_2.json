@@ -1,0 +1,205 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "meeshFactory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/archive database to another db')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get database table names",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select TABLE_NAME as tableName, TABLE_SCHEMA as tableSchema from INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'\n",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqlGenericParamedSqlAuth",
+								"type": "DatasetReference",
+								"parameters": {
+									"ds_domain_name": {
+										"value": "@pipeline().parameters.pl_source_domain_name",
+										"type": "Expression"
+									},
+									"ds_database": {
+										"value": "@pipeline().parameters.pl_source_database",
+										"type": "Expression"
+									},
+									"ds_username": {
+										"value": "@pipeline().parameters.pl_source_username",
+										"type": "Expression"
+									},
+									"ds_password": {
+										"value": "@pipeline().parameters.pl_source_password",
+										"type": "Expression"
+									},
+									"ds_schema": null,
+									"ds_table": "none"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "table iterator",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get database table names",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get database table names').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "Table Copy",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Copy Table to Table Generic",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"pl_source_database": {
+												"value": "@pipeline().parameters.pl_source_database",
+												"type": "Expression"
+											},
+											"pl_source_table": {
+												"value": "@item().tableName",
+												"type": "Expression"
+											},
+											"pl_source_schema": {
+												"value": "@item().tableSchema",
+												"type": "Expression"
+											},
+											"pl_sink_table": {
+												"value": "@item().tableName",
+												"type": "Expression"
+											},
+											"pl_sink_schema": {
+												"value": "@{pipeline().parameters.pl_source_database}.@{item().tableSchema}",
+												"type": "Expression"
+											},
+											"pl_log_table": {
+												"value": "@pipeline().DataFactory",
+												"type": "Expression"
+											},
+											"pl_sink_database": {
+												"value": "@pipeline().parameters.pl_sink_database",
+												"type": "Expression"
+											},
+											"pl_sink_domain_name": {
+												"value": "@pipeline().parameters.pl_sink_domain_name",
+												"type": "Expression"
+											},
+											"pl_source_domain_name": {
+												"value": "@pipeline().parameters.pl_source_domain_name",
+												"type": "Expression"
+											},
+											"pl_source_username": {
+												"value": "@pipeline().parameters.pl_source_username",
+												"type": "Expression"
+											},
+											"pl_source_password": {
+												"value": "@pipeline().parameters.pl_source_password",
+												"type": "Expression"
+											},
+											"pl_sink_username": {
+												"value": "@pipeline().parameters.pl_sink_username",
+												"type": "Expression"
+											},
+											"pl_sink_password": {
+												"value": "@pipeline().parameters.pl_sink_password",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"pl_source_domain_name": {
+						"type": "string",
+						"defaultValue": "datametic-adf-learning.database.windows.net"
+					},
+					"pl_source_database": {
+						"type": "string",
+						"defaultValue": "discord-chat"
+					},
+					"pl_source_username": {
+						"type": "string",
+						"defaultValue": "sipakhti"
+					},
+					"pl_source_password": {
+						"type": "string",
+						"defaultValue": "Bingo_12345"
+					},
+					"pl_sink_domain_name": {
+						"type": "string",
+						"defaultValue": "datametic-adf-learning.database.windows.net"
+					},
+					"pl_sink_database": {
+						"type": "string",
+						"defaultValue": "backup"
+					},
+					"pl_sink_username": {
+						"type": "string",
+						"defaultValue": "sipakhti"
+					},
+					"pl_sink_password": {
+						"type": "string",
+						"defaultValue": "Bingo_12345"
+					}
+				},
+				"variables": {
+					"rowsProcessed": {
+						"type": "String",
+						"defaultValue": "0"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
