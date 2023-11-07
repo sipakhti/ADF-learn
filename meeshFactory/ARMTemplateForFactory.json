@@ -2039,7 +2039,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "dataflow_DimensionTables",
+								"referenceName": "dataflow_DimensionTables_From_CSV",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -2047,8 +2047,10 @@
 									"ProductStream": {},
 									"ProductCategoryStream": {},
 									"ProductModelStream": {},
+									"GETMAXCustomerSK": {},
 									"DimCustomer": {},
-									"DimProductSinkStream": {}
+									"DimProductSinkStream": {},
+									"CustomerSKSink": {}
 								}
 							},
 							"staging": {
@@ -2072,7 +2074,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow_DimensionTables')]",
+				"[concat(variables('factoryId'), '/dataflows/dataflow_DimensionTables_From_CSV')]",
 				"[concat(variables('factoryId'), '/linkedServices/GenericStorage_connection')]"
 			]
 		},
