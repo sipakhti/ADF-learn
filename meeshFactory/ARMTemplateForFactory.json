@@ -2888,7 +2888,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "Customer02.csv",
+						"fileName": "Customer01.csv",
 						"folderPath": "Customers",
 						"fileSystem": "csv"
 					},
@@ -4462,8 +4462,10 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: 'select  MAX(customerSK) as customerSK from sectionFive.DimCustomer_MDF',",
-						"     format: 'query',",
+						"     procedureName: 'spGetMaxCustomerSK',",
+						"     schemaName: 'dbo',",
+						"     resultSet: true,",
+						"     format: 'procedure',",
 						"     staged: true) ~> GETMAXCustomerSK",
 						"ProductStream, ProductCategoryStream join(ProductStream@ProductCategoryID == ProductCategoryStream@ProductCategoryID,",
 						"     joinType:'left',",
@@ -4539,6 +4541,7 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     truncate:true,",
 						"     format: 'table',",
 						"     staged: true,",
 						"     allowCopyCommand: true,",
