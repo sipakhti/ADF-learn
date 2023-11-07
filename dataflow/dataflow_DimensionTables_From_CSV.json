@@ -81,13 +81,13 @@
 					"name": "JoinProductModelStream"
 				},
 				{
-					"name": "select1"
+					"name": "SelectProductStream"
 				},
 				{
 					"name": "ProductSK"
 				},
 				{
-					"name": "select2"
+					"name": "SelectCustomerStream"
 				},
 				{
 					"name": "CustomerSK"
@@ -228,8 +228,8 @@
 				"          ProductCategoryName = ProductCategoryStream@Name",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 keyGenerate(output(ProductSK as long),",
+				"     skipDuplicateMapOutputs: true) ~> SelectProductStream",
+				"SelectProductStream keyGenerate(output(ProductSK as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> ProductSK",
 				"RowVerifier@CustomerLoadRows select(mapColumn(",
@@ -238,8 +238,8 @@
 				"          SalesPerson",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2 keyGenerate(output(CustomerSK as long),",
+				"     skipDuplicateMapOutputs: true) ~> SelectCustomerStream",
+				"SelectCustomerStream keyGenerate(output(CustomerSK as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CustomerSK",
 				"CustomerSK derive(CustomerSK = CustomerSK + CustomerSKSink#outputs()[1].CustomerSKMAX) ~> CustomerSKupdated",
