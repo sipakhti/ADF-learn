@@ -74,7 +74,8 @@
 				"          ResourceType,",
 				"          ResourceGroup,",
 				"          Resource",
-				"     )) ~> jsonSink"
+				"     ),",
+				"     partitionBy('hash', 1)) ~> jsonSink"
 			]
 		}
 	}
