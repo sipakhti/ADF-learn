@@ -1,0 +1,79 @@
+{
+	"name": "df_parquet_to_json",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsGenericStoragePARQUET",
+						"type": "DatasetReference"
+					},
+					"name": "blobparquetstream"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "GenericStorageJsonLogs",
+						"type": "DatasetReference"
+					},
+					"name": "jsonSink"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          CorrelationID as string,",
+				"          OperationName as string,",
+				"          Status as string,",
+				"          EventCategory as string,",
+				"          Level as string,",
+				"          Time as timestamp,",
+				"          Subscription as string,",
+				"          EventInitiatedBy as string,",
+				"          ResourceType as string,",
+				"          ResourceGroup as string,",
+				"          Resource as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> blobparquetstream",
+				"blobparquetstream sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Correlationid as string,",
+				"          Operationname as string,",
+				"          Status as string,",
+				"          Eventcategory as string,",
+				"          Level as string,",
+				"          Time as string,",
+				"          Subscription as string,",
+				"          Eventinitiatedby as string,",
+				"          Resourcetype as string,",
+				"          Resourcegroup as string,",
+				"          Resource as string",
+				"     ),",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          CorrelationID,",
+				"          OperationName,",
+				"          Status,",
+				"          EventCategory,",
+				"          Level,",
+				"          Time,",
+				"          Subscription,",
+				"          EventInitiatedBy,",
+				"          ResourceType,",
+				"          ResourceGroup,",
+				"          Resource",
+				"     )) ~> jsonSink"
+			]
+		}
+	}
+}
