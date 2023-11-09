@@ -1,5 +1,5 @@
 {
-	"name": "AzureSynapseAnalyticsTable1",
+	"name": "AzureSynapseAnalyticsLogJsontable",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_dp203workspace1234_meeshpool",

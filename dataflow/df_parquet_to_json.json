@@ -56,7 +56,6 @@
 				"          Resource as string",
 				"     ),",
 				"     partitionFileNames:['log_json'],",
-				"     truncate: true,",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",

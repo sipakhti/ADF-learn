@@ -62,14 +62,7 @@
 						"type": "SqlDWSink",
 						"writeBehavior": "Insert"
 					},
-					"enableStaging": true,
-					"stagingSettings": {
-						"linkedServiceName": {
-							"referenceName": "GenericStorage_connection",
-							"type": "LinkedServiceReference"
-						},
-						"path": "staging"
-					},
+					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
@@ -183,7 +176,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "AzureSynapseAnalyticsTable1",
+						"referenceName": "AzureSynapseAnalyticsLogJsontable",
 						"type": "DatasetReference"
 					}
 				]
