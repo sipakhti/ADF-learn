@@ -13,6 +13,61 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_kbq')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlMeesh_demoData_connection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ProductID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SalesOrderID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "OrderQty",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "UnitPrice",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "OrderDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CustomerID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TaxAmt",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					}
+				],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/TaxiData')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -184,14 +239,6 @@
 					"referenceName": "LS_dp203workspace1234_meeshpool",
 					"type": "LinkedServiceReference"
 				},
-				"parameters": {
-					"schema": {
-						"type": "string"
-					},
-					"tableName": {
-						"type": "string"
-					}
-				},
 				"annotations": [],
 				"type": "AzureSqlDWTable",
 				"schema": [
@@ -243,14 +290,8 @@
 					}
 				],
 				"typeProperties": {
-					"schema": {
-						"value": "@dataset().schema",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().tableName",
-						"type": "Expression"
-					}
+					"schema": "sectionFive",
+					"table": "logdata_parquet"
 				}
 			},
 			"dependsOn": []
@@ -382,11 +423,57 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
+						"fileName": "Log.parquet",
 						"fileSystem": "parquet"
 					},
 					"compressionCodec": "snappy"
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": "CorrelationID",
+						"type": "UTF8"
+					},
+					{
+						"name": "OperationName",
+						"type": "UTF8"
+					},
+					{
+						"name": "Status",
+						"type": "UTF8"
+					},
+					{
+						"name": "EventCategory",
+						"type": "UTF8"
+					},
+					{
+						"name": "Level",
+						"type": "UTF8"
+					},
+					{
+						"name": "Time",
+						"type": "INT96"
+					},
+					{
+						"name": "Subscription",
+						"type": "UTF8"
+					},
+					{
+						"name": "EventInitiatedBy",
+						"type": "UTF8"
+					},
+					{
+						"name": "ResourceType",
+						"type": "UTF8"
+					},
+					{
+						"name": "ResourceGroup",
+						"type": "UTF8"
+					},
+					{
+						"name": "Resource",
+						"type": "UTF8"
+					}
+				]
 			},
 			"dependsOn": []
 		},
@@ -1806,7 +1893,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_kbq')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Copy-to-sectoinFive-logdata')]",
@@ -2386,10 +2475,7 @@
 							{
 								"referenceName": "dsAzureSynapseMeeshPoolPARQUETlogs",
 								"type": "DatasetReference",
-								"parameters": {
-									"schema": "sectionFive",
-									"tableName": "logdata_parquet"
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -2570,10 +2656,7 @@
 							{
 								"referenceName": "dsAzureSynapseMeeshPoolPARQUETlogs",
 								"type": "DatasetReference",
-								"parameters": {
-									"schema": "sectionFive",
-									"tableName": "logdata_parquet_polybase"
-								}
+								"parameters": {}
 							}
 						]
 					}
@@ -3169,13 +3252,13 @@
 							"name": "JoinProductModelStream"
 						},
 						{
-							"name": "select1"
+							"name": "SelectProductStream"
 						},
 						{
 							"name": "ProductSK"
 						},
 						{
-							"name": "select2"
+							"name": "SelectCustomerStream"
 						},
 						{
 							"name": "CustomerSK"
@@ -3316,8 +3399,8 @@
 						"          ProductCategoryName = ProductCategoryStream@Name",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 keyGenerate(output(ProductSK as long),",
+						"     skipDuplicateMapOutputs: true) ~> SelectProductStream",
+						"SelectProductStream keyGenerate(output(ProductSK as long),",
 						"     startAt: 1L,",
 						"     stepValue: 1L) ~> ProductSK",
 						"RowVerifier@CustomerLoadRows select(mapColumn(",
@@ -3326,8 +3409,8 @@
 						"          SalesPerson",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select2",
-						"select2 keyGenerate(output(CustomerSK as long),",
+						"     skipDuplicateMapOutputs: true) ~> SelectCustomerStream",
+						"SelectCustomerStream keyGenerate(output(CustomerSK as long),",
 						"     startAt: 1L,",
 						"     stepValue: 1L) ~> CustomerSK",
 						"CustomerSK derive(CustomerSK = CustomerSK + CustomerSKSink#outputs()[1].CustomerSKMAX) ~> CustomerSKupdated",
@@ -3556,117 +3639,86 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MappingDataFlow_DimensionTables')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/dataflow_logdata_parquet')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "DataFlowDimensions",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflow_DimensionTables_From_CSV",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"CustomerStream": {},
-									"ProductStream": {},
-									"ProductCategoryStream": {},
-									"ProductModelStream": {},
-									"GETMAXCustomerSK": {},
-									"DimProductLatest": {},
-									"DimCustomerLatest": {},
-									"DimCustomer": {},
-									"DimProductSinkStream": {},
-									"CustomerSKSink": {}
-								}
+				"description": "- filter NULL resourceGroup",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dsGenericStoragePARQUET",
+								"type": "DatasetReference"
 							},
-							"staging": {
-								"linkedService": {
-									"referenceName": "GenericStorage_connection",
-									"type": "LinkedServiceReference"
-								},
-								"folderPath": "staging"
-							},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine",
-							"sourceStagingConcurrency": 1
+							"name": "logdataParquetStream"
 						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dsAzureSynapseMeeshPoolPARQUETlogs",
+								"type": "DatasetReference"
+							},
+							"name": "logdataPPrquet"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filterNULL"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CorrelationID as string,",
+						"          OperationName as string,",
+						"          Status as string,",
+						"          EventCategory as string,",
+						"          Level as string,",
+						"          Time as timestamp,",
+						"          Subscription as string,",
+						"          EventInitiatedBy as string,",
+						"          ResourceType as string,",
+						"          ResourceGroup as string,",
+						"          Resource as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> logdataParquetStream",
+						"logdataParquetStream filter(!isNull(ResourceGroup)) ~> filterNULL",
+						"filterNULL sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Correlationid as string,",
+						"          Operationname as string,",
+						"          Status as string,",
+						"          Eventcategory as string,",
+						"          Level as string,",
+						"          Time as timestamp,",
+						"          Subscription as string,",
+						"          Eventinitiatedby as string,",
+						"          Resourcetype as string,",
+						"          Resourcegroup as string,",
+						"          Resource as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> logdataPPrquet"
+					]
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow_DimensionTables_From_CSV')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MappingDataFlow_FactSales')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "dtfFactSales",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflow_FactSales",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"SalesOrderDetailStream": {},
-									"SalesOrderHeaderStream": {},
-									"SectionFiveFactSalesTableSink": {}
-								}
-							},
-							"staging": {
-								"linkedService": {
-									"referenceName": "GenericStorage_connection",
-									"type": "LinkedServiceReference"
-								},
-								"folderPath": "staging"
-							},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow_FactSales')]"
+				"[concat(variables('factoryId'), '/datasets/dsGenericStoragePARQUET')]",
+				"[concat(variables('factoryId'), '/datasets/dsAzureSynapseMeeshPoolPARQUETlogs')]"
 			]
 		}
 	]
