@@ -24,7 +24,7 @@
 			],
 			"transformations": [
 				{
-					"name": "filterNULL"
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -45,8 +45,8 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> logdataParquetStream",
-				"logdataParquetStream filter(!isNull(ResourceGroup)) ~> filterNULL",
-				"filterNULL sink(allowSchemaDrift: true,",
+				"logdataParquetStream filter(isNull(ResourceGroup)) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          Correlationid as string,",
@@ -70,7 +70,20 @@
 				"     allowCopyCommand: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> logdataPPrquet"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Correlationid = CorrelationID,",
+				"          Operationname = OperationName,",
+				"          Status,",
+				"          Eventcategory = EventCategory,",
+				"          Level,",
+				"          Time,",
+				"          Subscription,",
+				"          Eventinitiatedby = EventInitiatedBy,",
+				"          Resourcetype = ResourceType,",
+				"          Resourcegroup = ResourceGroup,",
+				"          Resource",
+				"     )) ~> logdataPPrquet"
 			]
 		}
 	}
