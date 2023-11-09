@@ -1,0 +1,77 @@
+{
+	"name": "dataflow_logdata_parquet",
+	"properties": {
+		"description": "- filter NULL resourceGroup",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsGenericStoragePARQUET",
+						"type": "DatasetReference"
+					},
+					"name": "logdataParquetStream"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsAzureSynapseMeeshPoolPARQUETlogs",
+						"type": "DatasetReference"
+					},
+					"name": "logdataPPrquet"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterNULL"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CorrelationID as string,",
+				"          OperationName as string,",
+				"          Status as string,",
+				"          EventCategory as string,",
+				"          Level as string,",
+				"          Time as timestamp,",
+				"          Subscription as string,",
+				"          EventInitiatedBy as string,",
+				"          ResourceType as string,",
+				"          ResourceGroup as string,",
+				"          Resource as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> logdataParquetStream",
+				"logdataParquetStream filter(!isNull(ResourceGroup)) ~> filterNULL",
+				"filterNULL sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Correlationid as string,",
+				"          Operationname as string,",
+				"          Status as string,",
+				"          Eventcategory as string,",
+				"          Level as string,",
+				"          Time as timestamp,",
+				"          Subscription as string,",
+				"          Eventinitiatedby as string,",
+				"          Resourcetype as string,",
+				"          Resourcegroup as string,",
+				"          Resource as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> logdataPPrquet"
+			]
+		}
+	}
+}
