@@ -19,15 +19,167 @@
 						"referenceName": "df_parquet_to_json",
 						"type": "DataFlowReference"
 					},
-					"staging": {
-						"folderPath": "staging"
-					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy JSON logs to Pool DB",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "df-JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*.json",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"allowCopyCommand": true
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['CorrelationID']"
+								},
+								"sink": {
+									"name": "CorrelationID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OperationName']"
+								},
+								"sink": {
+									"name": "OperationName",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Status']"
+								},
+								"sink": {
+									"name": "Status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['EventCategory']"
+								},
+								"sink": {
+									"name": "EventCategory",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Level']"
+								},
+								"sink": {
+									"name": "Level",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Time']"
+								},
+								"sink": {
+									"name": "Time",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Subscription']"
+								},
+								"sink": {
+									"name": "Subscription",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['EventInitiatedBy']"
+								},
+								"sink": {
+									"name": "EventInitiatedBy",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['ResourceType']"
+								},
+								"sink": {
+									"name": "ResourceType",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['ResourceGroup']"
+								},
+								"sink": {
+									"name": "ResourceGroup",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Resource']"
+								},
+								"sink": {
+									"name": "Resource",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "GenericStorageJsonLogs",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSynapseAnalyticsTable1",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
