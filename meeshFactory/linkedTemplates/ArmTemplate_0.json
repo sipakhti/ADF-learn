@@ -489,7 +489,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsTable1')]",
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsLogJsontable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {

@@ -2392,14 +2392,7 @@
 								"type": "SqlDWSink",
 								"writeBehavior": "Insert"
 							},
-							"enableStaging": true,
-							"stagingSettings": {
-								"linkedServiceName": {
-									"referenceName": "GenericStorage_connection",
-									"type": "LinkedServiceReference"
-								},
-								"path": "staging"
-							},
+							"enableStaging": false,
 							"translator": {
 								"type": "TabularTranslator",
 								"mappings": [
@@ -2514,7 +2507,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "AzureSynapseAnalyticsTable1",
+								"referenceName": "AzureSynapseAnalyticsLogJsontable",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -2529,8 +2522,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/df_parquet_to_json')]",
 				"[concat(variables('factoryId'), '/datasets/GenericStorageJsonLogs')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsTable1')]",
-				"[concat(variables('factoryId'), '/linkedServices/GenericStorage_connection')]"
+				"[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsLogJsontable')]"
 			]
 		},
 		{
@@ -3137,7 +3129,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsTable1')]",
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsLogJsontable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -5365,7 +5357,6 @@
 						"          Resource as string",
 						"     ),",
 						"     partitionFileNames:['log_json'],",
-						"     truncate: true,",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
