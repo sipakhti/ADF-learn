@@ -2060,8 +2060,7 @@
 								"coreCount": 8,
 								"computeType": "General"
 							},
-							"traceLevel": "Fine",
-							"sourceStagingConcurrency": 1
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -2391,8 +2390,7 @@
 							},
 							"sink": {
 								"type": "SqlDWSink",
-								"allowCopyCommand": true,
-								"copyCommandSettings": {}
+								"writeBehavior": "Insert"
 							},
 							"enableStaging": true,
 							"stagingSettings": {
