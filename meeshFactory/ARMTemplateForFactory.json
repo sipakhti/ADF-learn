@@ -2356,6 +2356,171 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Copy JSON logs to Pool DB",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "df-JSON",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.json",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"allowCopyCommand": true,
+								"copyCommandSettings": {}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "GenericStorage_connection",
+									"type": "LinkedServiceReference"
+								},
+								"path": "staging"
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['CorrelationID']"
+										},
+										"sink": {
+											"name": "CorrelationID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['OperationName']"
+										},
+										"sink": {
+											"name": "OperationName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Status']"
+										},
+										"sink": {
+											"name": "Status",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['EventCategory']"
+										},
+										"sink": {
+											"name": "EventCategory",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Level']"
+										},
+										"sink": {
+											"name": "Level",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Time']"
+										},
+										"sink": {
+											"name": "Time",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Subscription']"
+										},
+										"sink": {
+											"name": "Subscription",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['EventInitiatedBy']"
+										},
+										"sink": {
+											"name": "EventInitiatedBy",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ResourceType']"
+										},
+										"sink": {
+											"name": "ResourceType",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ResourceGroup']"
+										},
+										"sink": {
+											"name": "ResourceGroup",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Resource']"
+										},
+										"sink": {
+											"name": "Resource",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "GenericStorageJsonLogs",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSynapseAnalyticsTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -2364,7 +2529,10 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_parquet_to_json')]"
+				"[concat(variables('factoryId'), '/dataflows/df_parquet_to_json')]",
+				"[concat(variables('factoryId'), '/datasets/GenericStorageJsonLogs')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsTable1')]",
+				"[concat(variables('factoryId'), '/linkedServices/GenericStorage_connection')]"
 			]
 		},
 		{
@@ -2964,6 +3132,74 @@
 				"typeProperties": {
 					"schema": "sectionFive",
 					"table": "FactSales"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_dp203workspace1234_meeshpool')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_dp203workspace1234_meeshpool",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "Correlationid",
+						"type": "varchar"
+					},
+					{
+						"name": "Operationname",
+						"type": "varchar"
+					},
+					{
+						"name": "Status",
+						"type": "varchar"
+					},
+					{
+						"name": "Eventcategory",
+						"type": "varchar"
+					},
+					{
+						"name": "Level",
+						"type": "varchar"
+					},
+					{
+						"name": "Time",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Subscription",
+						"type": "varchar"
+					},
+					{
+						"name": "Eventinitiatedby",
+						"type": "varchar"
+					},
+					{
+						"name": "Resourcetype",
+						"type": "varchar"
+					},
+					{
+						"name": "Resourcegroup",
+						"type": "varchar"
+					},
+					{
+						"name": "Resource",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "sectionFive",
+					"table": "logdata_json"
 				}
 			},
 			"dependsOn": [
@@ -5117,6 +5353,8 @@
 						"          Resourcegroup as string,",
 						"          Resource as string",
 						"     ),",
+						"     partitionFileNames:['log_json'],",
+						"     truncate: true,",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -5134,7 +5372,8 @@
 						"          ResourceType,",
 						"          ResourceGroup,",
 						"          Resource",
-						"     )) ~> jsonSink"
+						"     ),",
+						"     partitionBy('hash', 1)) ~> jsonSink"
 					]
 				}
 			},

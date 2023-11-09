@@ -13,6 +13,86 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_logdata_parquet')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "- filter NULL resourceGroup",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dsGenericStoragePARQUET",
+								"type": "DatasetReference"
+							},
+							"name": "logdataParquetStream"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dsAzureSynapseMeeshPoolPARQUETlogs",
+								"type": "DatasetReference"
+							},
+							"name": "logdataPPrquet"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filterNULL"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CorrelationID as string,",
+						"          OperationName as string,",
+						"          Status as string,",
+						"          EventCategory as string,",
+						"          Level as string,",
+						"          Time as timestamp,",
+						"          Subscription as string,",
+						"          EventInitiatedBy as string,",
+						"          ResourceType as string,",
+						"          ResourceGroup as string,",
+						"          Resource as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> logdataParquetStream",
+						"logdataParquetStream filter(!isNull(ResourceGroup)) ~> filterNULL",
+						"filterNULL sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Correlationid as string,",
+						"          Operationname as string,",
+						"          Status as string,",
+						"          Eventcategory as string,",
+						"          Level as string,",
+						"          Time as timestamp,",
+						"          Subscription as string,",
+						"          Eventinitiatedby as string,",
+						"          Resourcetype as string,",
+						"          Resourcegroup as string,",
+						"          Resource as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> logdataPPrquet"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/df_parquet_to_json')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -71,6 +151,8 @@
 						"          Resourcegroup as string,",
 						"          Resource as string",
 						"     ),",
+						"     partitionFileNames:['log_json'],",
+						"     truncate: true,",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -88,7 +170,8 @@
 						"          ResourceType,",
 						"          ResourceGroup,",
 						"          Resource",
-						"     )) ~> jsonSink"
+						"     ),",
+						"     partitionBy('hash', 1)) ~> jsonSink"
 					]
 				}
 			},
@@ -428,6 +511,171 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Copy JSON logs to Pool DB",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "df-JSON",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.json",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"allowCopyCommand": true,
+								"copyCommandSettings": {}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "GenericStorage_connection",
+									"type": "LinkedServiceReference"
+								},
+								"path": "staging"
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['CorrelationID']"
+										},
+										"sink": {
+											"name": "CorrelationID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['OperationName']"
+										},
+										"sink": {
+											"name": "OperationName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Status']"
+										},
+										"sink": {
+											"name": "Status",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['EventCategory']"
+										},
+										"sink": {
+											"name": "EventCategory",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Level']"
+										},
+										"sink": {
+											"name": "Level",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Time']"
+										},
+										"sink": {
+											"name": "Time",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Subscription']"
+										},
+										"sink": {
+											"name": "Subscription",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['EventInitiatedBy']"
+										},
+										"sink": {
+											"name": "EventInitiatedBy",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ResourceType']"
+										},
+										"sink": {
+											"name": "ResourceType",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ResourceGroup']"
+										},
+										"sink": {
+											"name": "ResourceGroup",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Resource']"
+										},
+										"sink": {
+											"name": "Resource",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "GenericStorageJsonLogs",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSynapseAnalyticsTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -487,7 +735,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow_logdata_parquet')]"
+			]
 		}
 	]
 }
